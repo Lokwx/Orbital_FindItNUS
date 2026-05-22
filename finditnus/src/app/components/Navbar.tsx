@@ -26,7 +26,6 @@ export default function Navbar() {
                         </p>
                     </div>
                 </div>
-                <div><Dropdown/></div>
             </nav>
         </header>
     )
