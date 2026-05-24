@@ -5,3 +5,7 @@
     height: 100%;
 }
 
+.leaflet-top.leaflet-left {
+    top: 90%;
+    left: 90%;
+}
