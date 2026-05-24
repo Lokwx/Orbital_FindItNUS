@@ -1,5 +1,9 @@
+import os
 from typing import Final
 
+import firebase_admin
+from dotenv import load_dotenv
+from firebase_admin import credentials, firestore
 from telegram import (
     InlineKeyboardButton,
     InlineKeyboardMarkup,
@@ -15,30 +19,33 @@ from telegram.ext import (
     filters,
 )
 
-TOKEN: Final = "8810540711:AAHjABPwTJ8iWIc3Kfa3U1YLPMVlCLHAANs"
+load_dotenv()
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
+# Firebase
+TOKEN: Final = BOT_TOKEN
 BOT_USERNAME: Final = "FindItNUSbot"
+
+# Use service account
+cred = credentials.Certificate("finditnus/FindItNUSbot/serviceAccountKey.json")
+
+firebase_app = firebase_admin.initialize_app(cred)
+firebase_db = firestore.client()
 
 REPORT_TYPE, ITEM_NAME, ITEM_CATEGORY, ITEM_LOCATION, CONTACT_NUMBER = range(5)
 
+
 # Commands
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "Hello! Welcome to the FindItNUS bot. Use /report to create a listing."
-    )
+    await update.message.reply_text("Hello! Welcome to the FindItNUS bot. Use /report to create a listing.")
 
 
 async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "start - Start the bot\n"
-        "help - Show help\n"
-        "report - Create a lost-and-found listing\n"
-        "cancel - Cancel the current listing flow\n"
-        "status - Check listing status\n"
-        "mylistings - View your submitted listings"
-    )
+    await update.message.reply_text("start - Start the bot\nhelp - Show help\nreport - Create a lost-and-found listing\ncancel - Cancel the current listing flow\nstatus - Check listing status\nmylistings - View your submitted listings")
 
 
 # Reporting
+
 
 async def report_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     menu = [
@@ -86,9 +93,7 @@ async def item_name(update: Update, context: ContextTypes.DEFAULT_TYPE):
         [InlineKeyboardButton("Other", callback_data="Other")],
     ]
 
-    await update.message.reply_text(
-        "What is the item's category?", reply_markup=InlineKeyboardMarkup(menu)
-    )
+    await update.message.reply_text("What is the item's category?", reply_markup=InlineKeyboardMarkup(menu))
 
     return ITEM_CATEGORY
 
@@ -99,9 +104,7 @@ async def item_category(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     context.user_data["item_category"] = query.data
 
-    await query.message.reply_text(
-        f"Where was it {context.user_data['report_type'].lower()}?"
-    )
+    await query.message.reply_text(f"Where was it {context.user_data['report_type'].lower()}?")
 
     return ITEM_LOCATION
 
@@ -117,25 +120,50 @@ async def item_location(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def contact_number(update: Update, context: ContextTypes.DEFAULT_TYPE):
     context.user_data["contact_number"] = update.message.text
 
-    report = {
-        "report_type": context.user_data["report_type"],
-        "item_name": context.user_data["item_name"],
-        "item_category": context.user_data["item_category"],
-        "item_location": context.user_data["item_location"],
-        "contact_number": context.user_data["contact_number"],
-    }
-
-    await update.message.reply_text(
-        "Report Submitted\n"
-        "Report Type: " + report["report_type"] + "\n"
-        "Item Name: " + report["item_name"] + "\n"
-        "Item Category: " + report["item_category"] + "\n"
-        "Item Location: " + report["item_location"] + "\n"
-        "Contact Number: " + report["contact_number"] + "\n"
-    )
-    context.user_data.clear()
+    await generate_report(update, context)
+    update_database(update, context)
 
     return ConversationHandler.END
+
+
+async def generate_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text("Report Submitted\
+    \nReport Type: " + context.user_data["report_type"] + \
+    "\nItem Name: " + context.user_data["item_name"] + \
+    "\nItem Category: " + context.user_data["item_category"] + \
+    "\nItem Location: " + context.user_data["item_location"] + \
+    "\nContact Number: " + context.user_data["contact_number"] + "\n")
+
+
+def update_database(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    # python-tele-api
+    UserID = update.effective_user.id
+    UserName = update.effective_user.username
+
+    ReportType = context.user_data["report_type"]
+    ItemName = context.user_data["item_name"]
+    ItemCategory = context.user_data["item_category"]
+    ItemLocation = context.user_data["item_location"]
+    ContactNumber = context.user_data["contact_number"]
+
+    # Set data in Firebase
+    data = {
+        "UserID": UserID,
+        "UserName": UserName,
+        "ReportType": ReportType,
+        "ItemName": ItemName,
+        "ItemCategory": ItemCategory,
+        "ItemLocation": ItemLocation,
+        "ContactNumber": ContactNumber,
+    }
+
+    if ReportType == "Lost":
+        firebase_db.collection("LostItemData").document(str(UserID)).collection("Reports").add(data)
+    else:
+        firebase_db.collection("FoundItemData").document(str(UserID)).collection("Reports").add(data)
+
+    context.user_data.clear()
 
 
 async def cancel_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -184,12 +212,8 @@ if __name__ == "__main__":
             REPORT_TYPE: [CallbackQueryHandler(report_type)],
             ITEM_NAME: [MessageHandler(filters.TEXT & ~filters.COMMAND, item_name)],
             ITEM_CATEGORY: [CallbackQueryHandler(item_category)],
-            ITEM_LOCATION: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, item_location)
-            ],
-            CONTACT_NUMBER: [
-                MessageHandler(filters.TEXT & ~filters.COMMAND, contact_number)
-            ],
+            ITEM_LOCATION: [MessageHandler(filters.TEXT & ~filters.COMMAND, item_location)],
+            CONTACT_NUMBER: [MessageHandler(filters.TEXT & ~filters.COMMAND, contact_number)],
         },
         fallbacks=[CommandHandler("cancel", cancel_command)],
     )
