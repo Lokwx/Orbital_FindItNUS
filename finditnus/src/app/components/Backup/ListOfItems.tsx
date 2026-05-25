@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react';
-import Hoverbox from "@/app/components/Hoverbox";
+import Hoverbox from "@/app/components/Backup/Hoverbox";
 import { getItemData } from "@/Firebase";
 
 export default function ListOfItems(props)
