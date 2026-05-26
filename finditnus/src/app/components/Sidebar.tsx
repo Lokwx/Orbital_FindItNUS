@@ -26,7 +26,7 @@ export default function Sidebar() {
 
     return (
         <section className="flex">
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between border border-slate-400/50 shadow-xl z-20">
                 <div className="flex flex-col mx-2 w-48 whitespace-nowrap overflow-clip">
                     <button
                         type="button"
@@ -102,6 +102,9 @@ export default function Sidebar() {
                         {darkMode ? <h1>Light Mode</h1> : <h1>Dark Mode</h1>}
                     </div>
                 </div>
+            </div>
+            <div>
+                {filterMode && <FilterPanel />}
             </div>
         </section>
     );

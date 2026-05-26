@@ -18,7 +18,7 @@ import {
 export default function Topbar() {
 
     return (
-        <header className="flex items-center gap-2 p-3">
+        <header className="flex items-center gap-2 p-3 border-slate-400/50 shadow-md z-20">
             <div className="gap-3 flex flex-row items-center px-2">
                 <div className="w-10 h-10 rounded-2xl bg-orange-200 items-center flex justify-center">
                     <img
