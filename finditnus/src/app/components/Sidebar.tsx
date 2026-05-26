@@ -4,9 +4,7 @@ import { Map, SearchX, SearchCheck, Info, ChevronRight, Funnel } from 'lucide-re
 
 import { NotificationsNoneRounded } from '@mui/icons-material';
 
-import { Description, Label } from '@/app/components/Catalyst/fieldset';
-
-import { Switch, SwitchField } from '@/app/components/Catalyst/switch';
+import { Switch } from '@mui/material';
 
 import * as Headless from '@headlessui/react';
 
@@ -38,7 +36,8 @@ export default function Sidebar() {
                         <Map /> Map
                     </button>
                     <button
-                        type="button" onClick={handleFilterMode}
+                        type="button"
+                        onClick={handleFilterMode}
                         className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl
                     hover:bg-indigo-500/12 hover:border-slate-200 hover:border hover:text-indigo-600"
                     >
@@ -94,15 +93,14 @@ export default function Sidebar() {
                             <ChevronRight />
                         </button>
                     </div>
-                    <Headless.Field className="flex w-full gap-4 px-3 py-4 rounded-2xl items-center">
+                    <div className="flex items-center">
                         <Switch
-                            color="indigo"
-                            name="darkMode"
-                            checked={darkMode}
                             onChange={handleDarkMode}
+                            checked={darkMode}
+                            color='default'
                         />
                         {darkMode ? <h1>Light Mode</h1> : <h1>Dark Mode</h1>}
-                    </Headless.Field>
+                    </div>
                 </div>
             </div>
         </section>
