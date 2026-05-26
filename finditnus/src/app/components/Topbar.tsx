@@ -43,7 +43,7 @@ export default function Topbar() {
                 ></input>
 
             </div>
-            <div className="relative w-10 h-10 rounded-2xl bg-slate-200 flex items-center z-10 justify-center">
+            <div className="relative w-10 h-10 rounded-2xl bg-slate-100/10 flex items-center z-10 justify-center">
                 <NotificationsNoneRounded/>
                 <div className="absolute top-2 right-1.5 w-2 h-2 bg-orange-600 rounded-full flex items-center justify-center"></div>
             </div>

@@ -11,10 +11,12 @@ import * as Headless from '@headlessui/react';
 import { useState } from 'react';
 
 import FilterPanel from '@/app/components/FilterPanel';
+import SideBar from '@/app/components/Sidebar';
 
 export default function Sidebar() {
     const [darkMode, setDarkMode] = useState(true);
     const [filterMode, setFilterMode] = useState(false);
+    const [sideBar, setSideBarMode] = useState(false);
 
     const handleDarkMode = () => {
         setDarkMode(!darkMode);
@@ -23,6 +25,10 @@ export default function Sidebar() {
     const handleFilterMode = () => {
         setFilterMode(!filterMode);
     };
+
+    const handleSideBarMode = () => {
+        setSideBarMode(!sideBar);
+    }
 
     return (
         <section className="flex">
@@ -45,6 +51,7 @@ export default function Sidebar() {
                     </button>
                     <button
                         type="button"
+                        onClick={handleSideBarMode}
                         className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl 
                     hover:bg-indigo-500/12 hover:border-slate-200 hover:border hover:text-indigo-600"
                     >
@@ -52,6 +59,7 @@ export default function Sidebar() {
                     </button>
                     <button
                         type="button"
+                        onClick={handleSideBarMode}
                         className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl 
                     hover:bg-indigo-500/12 hover:border-slate-200 hover:border hover:text-indigo-600"
                     >

@@ -1,6 +1,8 @@
 'use client'
+import { useState } from 'react'
 import {MapContainer, TileLayer, useMap, Marker, Popup} from "react-leaflet";
 import "leaflet/dist/leaflet.css";
+import DetailPanel from './DetailPanel';
 
 const pinIcon = L.divIcon(
     {
@@ -14,10 +16,16 @@ const pinIcon = L.divIcon(
 )
 
 export default function Map() {
+    const [markerClick, setMarkerClick] = useState(false)
     const position = [1.2965, 103.7763];
 
+    const handleMarkerClick = () => {
+        setMarkerClick(!markerClick);
+    }
+
     return (
-        <MapContainer
+        <div className='flex h-full w-full'>
+            <MapContainer
             center={position}
             zoom={15}
             scrollWheelZoom={true}
@@ -29,12 +37,19 @@ export default function Map() {
             <Marker
                 position={position}
                 icon={pinIcon}
+                eventHandlers={{
+                    click: handleMarkerClick,
+                }}
             >
                 <Popup>
                     Item XXX <br/> Contact Number
                 </Popup>
             </Marker>
-        </MapContainer>
+            </MapContainer>
+            <div className="flex">
+                {markerClick && <DetailPanel/>}
+            </div>
+        </div>
     )
 }
 

@@ -1,7 +1,6 @@
 import Map from './components/Map';
 import Topbar from './components/Topbar'
 import Sidebar from './components/Sidebar';
-import FilterPanel from './components/FilterPanel';
 import DetailPanel from './components/DetailPanel';
 
 export default function App() {
