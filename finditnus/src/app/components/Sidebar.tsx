@@ -1,6 +1,6 @@
 'use client';
 
-import { Map, SearchX, SearchCheck, Info, ChevronRight, Funnel } from 'lucide-react';
+import { Map, SearchX, SearchCheck, Info, ChevronRight, Funnel, Bell } from 'lucide-react';
 
 import { NotificationsNoneRounded } from '@mui/icons-material';
 
@@ -28,9 +28,77 @@ export default function Sidebar() {
 
     const handleSideBarMode = () => {
         setSideBarMode(!sideBar);
-    }
+    };
 
     return (
+        <section className="fixed w-screen h-screen bg-white z-30">
+            <div className="flex flex-col justify-between border border-slate-400/50 shadow-xl z-40">
+                <button
+                    type="button"
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <Map /> Map
+                </button>
+                <button
+                    type="button"
+                    onClick={handleFilterMode}
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <Funnel /> Filters
+                </button>
+                <button
+                    type="button"
+                    onClick={handleSideBarMode}
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <SearchX /> Lost Items
+                </button>
+                <button
+                    type="button"
+                    onClick={handleSideBarMode}
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <SearchCheck /> My Listings
+                </button>
+                <button
+                    type="button"
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <Bell /> Notifications
+                </button>
+                <button
+                    type="button"
+                    className="flex flex-row items-center gap-4 px-4 py-4 rounded-2xl z-50
+                        font-semibold border border-slate-200 shadow-md"
+                >
+                    <Info /> About
+                </button>
+            </div>
+            <div className="flex flex-1 justify-center items-center">
+                <div className="border border-slate-400/50 shadow-xl z-40 w-40 h-20 rounded-4xl m-8 bg-slate-200/60">
+                    <button
+                        className="flex flex-row items-center pt-4.5 pl-1"
+                        type="button"
+                    >
+                        <div className="size-10 rounded-full bg-indigo-400/10 flex items-center justify-center text-nowrap">
+                            <h1 className="font-bold text-indigo-700">WX</h1>
+                        </div>
+                        <div className="flex flex-col items-start justify-center px-2">
+                            <h1 className="text-md">Wei Xiong</h1>
+                            <p className="text-xs text-slate-600">View Profile</p>
+                        </div>
+                        <ChevronRight />
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        /*
         <section className="flex">
             <div className="flex flex-col justify-between border border-slate-400/50 shadow-xl z-20">
                 <div className="flex flex-col mx-2 w-48 whitespace-nowrap overflow-clip">
@@ -86,7 +154,7 @@ export default function Sidebar() {
                         className="flex w-full gap-4 px-2 py-4 rounded-2xl items-center
                     hover:bg-indigo-500/12 hover:border-slate-200 hover:border hover:text-indigo-600"
                     >
-                        {/* #TODO Add the button to connect to the profile page */}
+                        {/* #TODO Add the button to connect to the profile page 
                         <button
                             className="flex flex-row items-center"
                             type="button"
@@ -115,5 +183,6 @@ export default function Sidebar() {
                 {filterMode && <FilterPanel />}
             </div>
         </section>
+        */
     );
 }
