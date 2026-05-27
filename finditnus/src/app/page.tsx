@@ -4,14 +4,6 @@ import Sidebar from './components/Sidebar';
 
 export default function App() {
     return (
-        // <main className='flex flex-col h-screen w-screen bg-white'>
-        //     <header>
-        //         <Topbar/>
-        //     </header>
-        //     <section className=''>
-        //         <ClientMap/>
-        //     </section> 
-        // </main>
         <main className='flex flex-col h-screen w-screen bg-white'>
             <Topbar/>
             <section className="flex flex-1 flex-row">
@@ -20,9 +12,5 @@ export default function App() {
                 </div>
             </section>
         </main>
-        // <Sidebar/>
-        // <FilterPanel/>
-        // <Map/>
-        // <DetailPanel/>
     )
 }
