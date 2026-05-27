@@ -7,13 +7,26 @@ import {
     faTelegram
 } from '@fortawesome/free-brands-svg-icons'
 
-export default function DetailPanel({ setMarkerClick, selectedItem }) {
+type DetailPanelProps = {
+    setMarkerClick: (value: boolean) => void;
+    selectedItem: {
+    ItemName?: string;
+    Category?: string;
+    Location?: string;
+    Description?: string;
+    Contact?: string;
+    ContactNumber?: string;
+    };
+};
+
+
+export default function DetailPanel({ setMarkerClick, selectedItem } : DetailPanelProps) {
     const [timing, setTiming] = useState(2);
     const itemName = selectedItem.ItemName ?? "-";
     const itemCategory = selectedItem?.Category ?? "-";
     const itemLocation = selectedItem?.Location ?? "-";
     const itemDescription = selectedItem?.Description ?? "-";
-    const itemContact = selectedItem?.Contact ?? "-";
+    const itemContact = selectedItem?.ContactNumber ?? "-";
 
     const handleCloseDetailPanel = () => {
         setMarkerClick(false);
