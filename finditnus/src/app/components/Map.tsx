@@ -19,12 +19,14 @@ const pinIcon = L.divIcon({
 });
 
 type Item = {
-    id: string;
-    ItemName: string;
+    id?: string;
+    ItemName?: string;
     Category?: string;
-    Location: string;
+    Location?: string;
     ReportType?: string;
-    ContactNumber: string;
+    ContactNumber?: string;
+    Description?: string;
+    Contact?: string;
     X_Pos?: number;
     Y_Pos?: number;
 };
