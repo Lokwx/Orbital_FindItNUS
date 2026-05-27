@@ -35,7 +35,7 @@ export default function DetailPanel({ setMarkerClick, selectedItem } : DetailPan
     return (
         <section className="flex flex-col flex-1 w-84 bg-white z-40 gap">
             <div className="flex w-full flex-row justify-between">
-                <div className="flex flex-row gap">
+                <div className="flex flex-row gap-2">
                     <div className="w-20 h-8 flex justify-center items-center ml-2 bg-green-400/20 rounded-md shadow-2xl">Found</div>
                     <p className="w-20 h-8 flex justify-center items-center">{timing}h ago</p>
                 </div>

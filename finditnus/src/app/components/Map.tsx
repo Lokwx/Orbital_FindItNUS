@@ -6,8 +6,7 @@ import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-import DetailPanel from './DetailPanel';
-
+import { Divider } from '@mui/material'
 import { getAllItemData } from '@/Firebase';
 
 const pinIcon = L.divIcon({
@@ -38,6 +37,7 @@ export default function Map() {
     const [items, setItems] = useState<Item[]>([]);
     const [selectedItem, setSelectedItem] = useState<Item | null>(null);
     const [markerClick, setMarkerClick] = useState(false);
+    const [timing, setTiming] = useState(2);
 
     useEffect(() => {
         const loadDatabase = async () => {
@@ -59,7 +59,7 @@ export default function Map() {
                 center={position}
                 zoom={15}
                 scrollWheelZoom={true}
-                className='h-full w-full'
+                className="h-full w-full"
             >
                 <TileLayer
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
@@ -78,30 +78,40 @@ export default function Map() {
                         }}
                     >
                         <Popup>
-                            {itemData?.ItemName} <br />
-                            {itemData?.Location} <br />
-                            {itemData?.ContactNumber} <br />
-                            {itemData.X_Pos != undefined && itemData.Y_Pos != undefined ? (
-                                <span>
-                                    [{itemData?.X_Pos}, {itemData?.Y_Pos}]
-                                </span>
-                            ) : (
-                                <span>
-                                    [{originX}, {originY}]
-                                </span>
-                            )}
+                            <div className="flex w-full flex-row justify-center">
+                                <div className="flex flex-row items-center justify-center">
+                                    <div className="w-24 h-8 m-2 flex justify-center items-center bg-green-400/20 rounded-md shadow-2xl text-nowrap">Found</div>
+                                </div>
+                            </div>
+                            <img
+                                src="https://majorhifi.com/wp-content/uploads/Sennheiser-HD-400U-3-scaled.jpg"
+                                className="rounded-xl"
+                            ></img>
+                            <Divider/>
+                            <div className='flex flex-row justify-between'>
+                                <span>Name: </span>
+                                <span>{itemData?.ItemName ?? "-"}</span>
+                            </div>
+                            <div>
+                                <span>Category: </span>
+                                <span>{itemData?.Category ?? "-"}</span>
+                            </div>
+                            <div>
+                                <span>Description: </span>
+                                <span>{itemData?.Description ?? " -"}</span>
+                            </div>
+                            <div>
+                                <span>Location:</span>
+                                <span>{itemData?.Location ?? " -"}</span>
+                            </div>
+                            <div>
+                                <span>(x,y) : </span>
+                                <span>({itemData?.X_Pos ?? " - "}, {itemData?.Y_Pos ?? " - "})</span>
+                            </div>
                         </Popup>
                     </Marker>
                 ))}
             </MapContainer>
-            <div className="flex">
-                {markerClick && selectedItem && (
-                    <DetailPanel
-                        selectedItem={selectedItem}
-                        setMarkerClick={setMarkerClick}
-                    />
-                )}
-            </div>
         </div>
     );
 }
