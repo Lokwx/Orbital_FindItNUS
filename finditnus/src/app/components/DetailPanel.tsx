@@ -7,13 +7,17 @@ import {
     faTelegram
 } from '@fortawesome/free-brands-svg-icons'
 
-export default function DetailPanel() {
+export default function DetailPanel({ setMarkerClick }) {
     const [timing, setTiming] = useState(2);
     const [itemName, setItemName] = useState('Sennheiser Headphones');
     const [itemCategory, setItemCategory] = useState('Electronics');
     const [itemLocation, setItemLocation] = useState('UTown');
     const [itemDescription, setItemDescription] = useState('A student card is inside');
     const [itemContact, setItemContact] = useState('@weixiong');
+
+    const handleCloseDetailPanel = () => {
+        setMarkerClick(false);
+    }
 
     return (
         <section className="flex flex-col flex-1 w-84 bg-white z-40 gap">
@@ -24,6 +28,7 @@ export default function DetailPanel() {
                 </div>
                 <button
                     type="button"
+                    onClick={handleCloseDetailPanel}
                     className="flex size-8 items-center mr-2"
                 >
                     <X />

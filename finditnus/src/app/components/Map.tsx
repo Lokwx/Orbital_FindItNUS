@@ -47,7 +47,7 @@ export default function Map() {
             </Marker>
             </MapContainer>
             <div className="flex">
-                {markerClick && <DetailPanel/>}
+                {markerClick && <DetailPanel setMarkerClick={setMarkerClick}/>}
             </div>
         </div>
     )
