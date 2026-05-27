@@ -54,11 +54,11 @@ export default function Topbar() {
                 </div>
                 <button
                     type="button"
-                    className="absolute top-22.5 right-12 z-20"
+                    className="absolute top-24.5 right-12 z-20"
                 >
                     <Search />
                 </button>
-                <div className="absolute top-21 left-10 z-10">
+                <div className="absolute top-23 left-10 z-10">
                     <input
                         type="text"
                         placeholder="Search for items"
