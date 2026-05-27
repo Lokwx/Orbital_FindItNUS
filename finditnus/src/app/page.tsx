@@ -1,7 +1,6 @@
-import Map from './components/Map';
+import ClientMap from './components/ClientMap';
 import Topbar from './components/Topbar'
 import Sidebar from './components/Sidebar';
-import DetailPanel from './components/DetailPanel';
 
 export default function App() {
     return (
@@ -12,7 +11,7 @@ export default function App() {
                     <Sidebar/>
                 </div>
                 <div className='flex-1'>
-                    <Map/>
+                    <ClientMap/>
                 </div>
                 
             </section>
