@@ -22,7 +22,9 @@ const pinIcon = L.divIcon({
 type Item = {
     id: string;
     ItemName: string;
+    Category?: string;
     Location: string;
+    ReportType?: string;
     ContactNumber: string;
     X_Pos?: number;
     Y_Pos?: number;

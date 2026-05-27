@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, getDocs } from "firebase/firestore";
+import { getFirestore, doc, collection, collectionGroup, setDoc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDm1tq9FEmOYRA_hPcq1Gc7DTiBm07aiMQ",
@@ -26,7 +26,7 @@ const getItemData = async () => {
 }
 
 const getAllItemData = async () => {
-    const collectionRef = collection(db, "ItemData");
+    const collectionRef = collectionGroup(db, "Reports");
     const collectionSnap = await getDocs(collectionRef);
 
     const items = [];
