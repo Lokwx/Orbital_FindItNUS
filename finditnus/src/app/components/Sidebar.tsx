@@ -31,7 +31,7 @@ export default function Sidebar() {
     };
 
     return (
-        <section className="fixed w-screen h-screen bg-white z-30">
+        <section className="fixed w-screen h-screen max-w-[430px] bg-white z-30">
             <div className="flex flex-col justify-between border border-slate-400/50 shadow-xl z-40">
                 <button
                     type="button"
