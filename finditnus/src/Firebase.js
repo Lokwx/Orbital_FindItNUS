@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, doc, collection, setDoc, getDoc, updateDoc } from "firebase/firestore";
+import { getFirestore, doc, collection, setDoc, getDoc, updateDoc, getDocs } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDm1tq9FEmOYRA_hPcq1Gc7DTiBm07aiMQ",
@@ -25,4 +25,27 @@ const getItemData = async () => {
     }
 }
 
-export {getItemData}
+const getAllItemData = async () => {
+    const collectionRef = collection(db, "ItemData");
+    const collectionSnap = await getDocs(collectionRef);
+
+    const items = [];
+    for (const itemDoc of collectionSnap.docs) {
+        const itemData = itemDoc.data();
+
+        const item = {
+            id: itemDoc.id,
+            ItemName: itemData.ItemName,
+            Location: itemData.Location,
+            ContactNumber: itemData.ContactNumber,
+            X_Pos: itemData.X_Pos,
+            Y_Pos: itemData.Y_Pos,
+        }
+
+        items.push(item);
+    }
+
+    return items;
+}
+
+export {getItemData, getAllItemData}
