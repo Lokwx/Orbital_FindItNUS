@@ -7,10 +7,10 @@ import { Divider } from '@mui/material'
 import { useSearchParams } from "next/navigation";
 import Link from 'next/link';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import ClientMap from '../components/ClientMap';
 
-export default function Page() {
+function SavedPageContent() {
     const location = useSearchParams().get("location") ?? "Computing";
 
     // Location Filters
@@ -210,5 +210,13 @@ export default function Page() {
                 <ClientMap location={location}/>
             </section>
         </main>
+    )
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={null}>
+            <SavedPageContent />
+        </Suspense>
     )
 }
