@@ -66,7 +66,7 @@ export default function LandingPage() {
                         Computing
                     </Link>
                     <Link 
-                    href='/Saved'
+                    href='/Saved?location=Business'
                     className='flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md'
                     >
                         <CircleDollarSign/>
@@ -75,14 +75,14 @@ export default function LandingPage() {
                 </div>
                <div className='gap-2 flex'>
                     <Link 
-                    href='/Saved'
+                    href='/Saved?location=Science'
                     className='flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md'
                     >
                         <Atom/>
                         Science
                     </Link>
                     <Link 
-                    href='/Saved'
+                    href='/Saved?location=Engineering'
                     className='flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md'
                     >
                         <CircuitBoard/>
