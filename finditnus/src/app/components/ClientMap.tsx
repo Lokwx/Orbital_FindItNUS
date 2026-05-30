@@ -6,6 +6,10 @@ const Map = dynamic(() => import('./Map'), {
     ssr: false,
 });
 
-export default function ClientMap() {
-    return <Map />;
+type ClientMapProps = {
+    location: string;
+}
+
+export default function ClientMap({location}:ClientMapProps) {
+    return <Map location={location}/>;
 }

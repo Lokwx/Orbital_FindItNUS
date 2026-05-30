@@ -190,7 +190,7 @@ async def generate_report(update: Update, context: ContextTypes.DEFAULT_TYPE):
     "\n")
 
 # Coordinates from Google Maps
-# TODO implement NUSMods Location API for future enhancements
+# TODO implement NUSMods Location API for future enhancements ==> Connected to /components/Map.tsx to set the original location
 NUS_AREA_COORDINATES = {
      "UTown": {
         "latitude": 1.3059176154741567,

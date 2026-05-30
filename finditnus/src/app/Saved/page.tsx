@@ -11,7 +11,7 @@ import { useState } from 'react';
 import ClientMap from '../components/ClientMap';
 
 export default function Page() {
-    const location = useSearchParams().get("location");
+    const location = useSearchParams().get("location") ?? "Computing";
 
     // Location Filters
     const [today, setToday] = useState(false);
@@ -207,7 +207,7 @@ export default function Page() {
                 </div>
             </section>
             <section className='flex flex-1 items-center justify-center m-2'>
-                <ClientMap/>
+                <ClientMap location={location}/>
             </section>
         </main>
     )
