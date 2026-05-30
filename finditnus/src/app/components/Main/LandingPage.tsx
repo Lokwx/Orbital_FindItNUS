@@ -35,7 +35,7 @@ export default function LandingPage() {
             <section className=''>
                 <h1 className='text-3xl text-front font-bold'>Stop searching<br/>everywhere.</h1>
                 <Divider className='py-2'/>
-                <h2 className='text-md py-2 text-slate-400'>See lost and found reports across NUS.</h2>
+                <h1 className='text-md py-2 text-slate-400'>See lost and found reports across NUS.</h1>
             </section>
             <section className='flex relative items-center justify-center'>
                 <input
@@ -59,7 +59,7 @@ export default function LandingPage() {
                 </div>
                 <div className='gap-2 flex'>
                     <Link 
-                    href='/Saved'
+                    href='/Saved?location=Computing'
                     className='flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md'
                     >
                         <Laptop/>
@@ -104,21 +104,21 @@ export default function LandingPage() {
                     <ul className='list-none font-sans border-black shadow-md rounded-2xl'>
                         <li className='px-2 flex items-center gap-2 py-2'>
                             <MapPin className='size-6 shrink-0'/>
-                            <h1 className='text-xl'>NUS Central Library 
-                                <h2 className='text-sm text-slate-400'>119275</h2>
-                            </h1>
+                            <span className='text-xl'>NUS Central Library<br/> 
+                                <span className='text-sm text-slate-400'>119275</span>
+                            </span>
                         </li>
                         <li className='px-2 flex items-center gap-2 py-2'>
                             <MapPin className='size-6 shrink-0'/>
-                            <h1 className='text-xl'>NUS College of Design and Engineering 
-                                <h2 className='text-sm text-slate-400'>117575</h2>
-                            </h1>
+                            <span className='text-xl'>NUS College of Design and Engineering<br/> 
+                                <span className='text-sm text-slate-400'>117575</span>
+                            </span>
                         </li>
                         <li className='px-2 flex items-center gap-2 py-2 shrink-0'>
                             <MapPin className='size-6'/>
-                            <h1 className='text-xl'>COM3 
-                                <h2 className='text-sm text-slate-400'>119391</h2>
-                            </h1>
+                            <span className='text-xl'>COM3<br/>
+                                <span className='text-sm text-slate-400'>119391</span>
+                            </span>
                         </li>
                     </ul>
                 </div>
