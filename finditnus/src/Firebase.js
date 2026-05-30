@@ -35,12 +35,29 @@ const getAllItemData = async () => {
 
         const item = {
             id: itemDoc.id,
+
+            UserID: itemData.UserID,
+            UserName: itemData.UserName,
+
+            ReportType: itemData.ReportType,
             ItemName: itemData.ItemName,
-            Location: itemData.Location,
-            ContactNumber: itemData.ContactNumber,
-            X_Pos: itemData.X_Pos,
-            Y_Pos: itemData.Y_Pos,
-        }
+            ItemCategory: itemData.ItemCategory,
+            ItemDescription: itemData.ItemDescription,
+
+            ItemLocationInput: itemData.ItemLocationInput,
+            ItemLocation: itemData.ItemLocation,
+            Latitude: itemData.Latitude,
+            Longitude: itemData.Longitude,
+            ItemLocationDetail: itemData.ItemLocationDetail,
+
+            UserSubmitTiming: itemData.UserSubmitTiming,
+            Year: itemData.Year,
+            Month: itemData.Month,
+            Day: itemData.Day,
+            Hour: itemData.Hour,
+            Minute: itemData.Minute,
+            Second: itemData.Second,
+        };
 
         items.push(item);
     }

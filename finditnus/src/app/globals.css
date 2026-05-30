@@ -6,6 +6,18 @@
 }
 
 .leaflet-top.leaflet-left {
-    top: 85%;
+    top: 80%;
     left: 85%;
+}
+
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
