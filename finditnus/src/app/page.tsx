@@ -3,7 +3,7 @@ import Topbar from './components/Topbar'
 import Sidebar from './components/Sidebar';
 
 import Link from 'next/link';
-import LandingPage from './components/LandingPage'
+import LandingPage from './components/Main/LandingPage'
 
 export default function Page() {
     return (
