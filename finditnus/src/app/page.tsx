@@ -1,6 +1,6 @@
 import ClientMap from './components/ClientMap';
-import Topbar from './components/Topbar'
-import Sidebar from './components/Sidebar';
+import Topbar from './components/Backup/Topbar'
+import Sidebar from './components/Backup/Sidebar';
 
 import Link from 'next/link';
 import LandingPage from './components/Main/LandingPage'
