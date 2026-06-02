@@ -12,6 +12,7 @@ import ClientMap from '../components/Map/ClientMap';
 
 function SavedPageContent() {
     const location = useSearchParams().get("location") ?? "Computing";
+    const returnURL = useSearchParams().get("returnURL") ?? "/";
 
     // Location Filters
     const [today, setToday] = useState(false);
@@ -114,7 +115,7 @@ function SavedPageContent() {
             <header className='flex justify-between items-center py-5'>
                 <section className='flex items-center gap-4'>
                     <Link
-                        href='/'
+                        href={returnURL}
                         className='bg-slate-200/10 border border-slate-400 shadow-md rounded-full size-8 items-center justify-center flex'
                     >
                     <ChevronLeft/>

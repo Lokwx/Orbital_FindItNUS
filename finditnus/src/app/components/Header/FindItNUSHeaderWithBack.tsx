@@ -1,16 +1,30 @@
+'use client'
+
 import { Info, User, ChevronLeft } from 'lucide-react'
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
-export default function FindItNUSHeader() {
+type PropType = {
+    returnURL:string
+}
+
+export default function FindItNUSHeader({returnURL}:PropType) {
+    const router = useRouter();
+
+    const handleBack = (returnURL:string) => {
+        router.push(returnURL)
+    }
+
     return (
         <header className="relative flex flex-row items-center justify-between py-5 z-10">
             <div className='flex items-center gap-4'>
-                    <Link
-                        href='/'
+                    <button
+                        type='button'
+                        onClick={() => handleBack(returnURL)}
                         className='bg-slate-200/10 border border-slate-400 shadow-md rounded-full size-8 items-center justify-center flex'
                     >
                     <ChevronLeft/>
-                    </Link>
+                    </button>
             </div>
             <section className="relative flex flex-row items-center justify-center">
                 <div
