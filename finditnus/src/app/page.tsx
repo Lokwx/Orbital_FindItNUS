@@ -1,9 +1,9 @@
-import ClientMap from './components/ClientMap';
+import ClientMap from './components/Map/ClientMap';
 import Topbar from './components/Backup/Topbar'
 import Sidebar from './components/Backup/Sidebar';
 
 import Link from 'next/link';
-import LandingPage from './components/Main/LandingPage'
+import LandingPage from './components/Main Page/LandingPage'
 
 export default function Page() {
     return (
