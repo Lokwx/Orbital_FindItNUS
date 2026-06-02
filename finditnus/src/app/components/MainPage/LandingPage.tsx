@@ -5,33 +5,18 @@ import { useState } from 'react'
 import { Divider } from '@mui/material'
 import { Info, User, Search, Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPin } from 'lucide-react'
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTelegram } from '@fortawesome/free-brands-svg-icons';
 
 import Link from "next/link";
+
+import FindItNUSHeader from '@/app/components/Header/FindItNUSHeader'
+import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton';
 
 export default function LandingPage() {
     const [searchInput, setSearchInput] = useState("");
 
     return (
         <main className="flex flex-col px-5 font-serif bg-slate-200/10 w-screen h-screen">
-            <header className="relative flex flex-row items-center justify-between py-5 z-10">
-                <section className='relative flex flex-row items-center justify-center'>
-                    <button type='button' className='absolute -left-1 size-10 rounded-2xl bg-orange-300/40 shadow-md z-0'></button>
-                    <img
-                        alt="FindItNUS logo"
-                        className="relative size-8"
-                        src="https://finditnus.web.app/logo.png"
-                    />
-                    <h1 className='pl-4 text-xl font-semibold'>FinditNUS</h1>
-                </section>
-                <section className='relative flex flex-row items-center justify-center gap-4'>
-                    <button type='button' className='absolute right-9 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md'></button>
-                    <Info className='z-10'/>
-                    <button type='button' className='absolute -right-1 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md'></button>
-                    <User className='z-10'/>
-                </section>
-            </header>
+            <FindItNUSHeader/>
             <section className=''>
                 <h1 className='text-3xl text-front font-bold'>Stop searching<br/>everywhere.</h1>
                 <Divider className='py-2'/>
@@ -41,7 +26,7 @@ export default function LandingPage() {
                 <input
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className='flex-1 rounded-md border shadow-sm py-4 pl-2 text-sm'
+                className='flex-1 rounded-xl border shadow-sm py-4 pl-2 text-sm'
                 placeholder='Search for items, categories or locations'
                 >
                 </input>
@@ -53,9 +38,14 @@ export default function LandingPage() {
                         <Bookmark className='text-indigo-500'/>
                         <h1 className='pl-2 text-front font-semibold'>SAVED</h1>
                     </div>
-                    <button type='button' className='font-semibold text-indigo-500 px-2 py-2'>
+                    <div className='font-semibold text-indigo-500 px-2 py-2'>
+                        <Link
+                            href='/Saved/ViewAll'
+                            className='px-2 py-2'
+                        >
                         VIEW ALL
-                    </button>
+                        </Link>
+                    </div>
                 </div>
                 <div className='gap-2 flex'>
                     <Link 
@@ -96,9 +86,9 @@ export default function LandingPage() {
                         <History className='text-indigo-500'/>
                         <h1 className='pl-2 text-front font-semibold'>RECENT</h1>
                     </div>
-                    <Link href='/Recent' className='font-semibold text-indigo-500 px-2 py-2 '>
+                    <div className='font-semibold text-indigo-500 px-2 py-2'>
                         SEE ALL
-                    </Link>
+                    </div>
                 </div>
                 <div className="rounded-2xl">
                     <ul className='list-none font-sans border-black shadow-md rounded-2xl'>
@@ -124,14 +114,7 @@ export default function LandingPage() {
                 </div>
             </section>
             <section className='flex'>
-                <button type='button' className='gap-2 flex flex-1 text-md text-center font-semibold items-center justify-center bg-indigo-400/30 rounded-xl py-2'>
-                    <FontAwesomeIcon
-                        icon={faTelegram}
-                        size="xl"
-                        className='text-blue-500'
-                    />
-                    <h1>FindItNUS Telegram Bot</h1>
-                </button>
+                <BotLinkButton/>
             </section>
         </main>
     )
