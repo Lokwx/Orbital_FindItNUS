@@ -96,9 +96,9 @@ export default function LandingPage() {
                         <History className='text-indigo-500'/>
                         <h1 className='pl-2 text-front font-semibold'>RECENT</h1>
                     </div>
-                    <button type='button' className='font-semibold text-indigo-500 px-2 py-2 '>
+                    <Link href='/Recent' className='font-semibold text-indigo-500 px-2 py-2 '>
                         SEE ALL
-                    </button>
+                    </Link>
                 </div>
                 <div className="rounded-2xl">
                     <ul className='list-none font-sans border-black shadow-md rounded-2xl'>

@@ -8,7 +8,7 @@ import { useSearchParams } from "next/navigation";
 import Link from 'next/link';
 
 import { Suspense, useState } from 'react';
-import ClientMap from '../components/ClientMap';
+import ClientMap from '../components/Map/ClientMap';
 
 function SavedPageContent() {
     const location = useSearchParams().get("location") ?? "Computing";
