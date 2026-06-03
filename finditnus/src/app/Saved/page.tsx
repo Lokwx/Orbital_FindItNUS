@@ -110,6 +110,13 @@ function SavedPageContent() {
         setOther(true);
     }
 
+    //Save button
+    const [saved, setSaved] = useState(true)
+    const handleSave = () => {
+        //TODO implement storage of saved locations and update useState accordingly
+        setSaved(!saved)
+    }
+
     return (
         <main className='mx-auto flex h-screen w-full max-w-[430px] flex-col bg-white overflow-hidden font-serif px-5'>
             <header className='flex justify-between items-center py-5'>
@@ -126,10 +133,11 @@ function SavedPageContent() {
                     </div>
                 </section>
                 <section>
-                    <div className='flex items-center justify-center px-4 py-2 gap-2 bg-yellow-200/20 border border-slate-400 shadow-md rounded-full'>
-                        <Star className='size-4 text-amber-400 fill-yellow-300'/>
-                        <h1 className='font-semibold text-sm text-black'>SAVE</h1>
-                    </div>
+                    <button 
+                        onClick={handleSave}
+                        className='flex items-center justify-center px-4 py-2 gap-2 bg-yellow-200/20 border border-slate-400 shadow-md rounded-full'>
+                        {saved ? <Star className='size-6 text-amber-400 fill-yellow-300'/> : <Star className='size-6 text-amber-400'/>}
+                    </button>
                 </section>
             </header>
             <Divider/>
@@ -151,7 +159,7 @@ function SavedPageContent() {
                 <button type='button' className='flex items-center rounded-4xl bg-slate-200/20 border border-slate-400 p-2'
                 onClick={handleSetTomorrow}
                 >
-                    <h1 className='whitespace-nowrap font-sans font-semibold text-sm'>Tomorrow</h1>
+                    <h1 className='whitespace-nowrap font-sans font-semibold text-sm'>Yesterday</h1>
                 </button>
                 <button type='button' className='flex items-center rounded-4xl bg-slate-200/20 border border-slate-400 p-2'
                 onClick={handleSet7Days}
