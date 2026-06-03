@@ -11,7 +11,7 @@ import { Suspense, useState } from 'react';
 import ClientMap from '../components/Map/ClientMap';
 
 function SavedPageContent() {
-    const location = useSearchParams().get("location") ?? "Computing";
+    const location = useSearchParams().get("location") ?? "NUS";
     const returnURL = useSearchParams().get("returnURL") ?? "/";
 
     // Location Filters
