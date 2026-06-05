@@ -2,7 +2,7 @@
 ### Unified Ecosystem for Campus Lost & Found
 
 <p align="center">
-  <img src="./team_logo.png" alt="FindItNUS Team Logo" >width="600"/>
+  <img src="./team_logo.png" alt="FindItNUS Team Logo" width="600"/>
 </p>
 
 * Team Name: FindItNUS 
