@@ -20,7 +20,7 @@ export default function LandingPage() {
             <FindItNUSHeader/>
             <section className=''>
                 <h1 className='text-3xl text-front font-bold'>Stop searching<br/>everywhere.</h1>
-                <Divider className='py-2'/>
+                <Divider className='pt-2'/>
                 <h1 className='text-md py-2 text-slate-400'>See lost and found reports across NUS.</h1>
             </section>
             <section className='flex relative items-center justify-center'>
@@ -84,18 +84,19 @@ export default function LandingPage() {
                     </Link>
                 </div>
             </section>
+            <Divider className='py-2'/>
             <section className='py-4 flex flex-col gap-2 justify-center'>
                 <div className='flex justify-between items-center'>
                     <div className='flex'>
                         <History className='text-indigo-500'/>
-                        <h1 className='pl-2 text-front font-semibold'>RECENT</h1>
+                        <h1 className='pl-2 text-front font-semibold'>RECENTS</h1>
                     </div>
                     <div className='font-semibold text-indigo-500 px-2 py-2'>
                         <Link
                             href='/Recent'
                             className='px-2 py-2'
                         >
-                        SEE ALL
+                        VIEW ALL
                         </Link>
                     </div>
                 </div>
