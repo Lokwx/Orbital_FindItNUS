@@ -64,6 +64,7 @@ def add_lost_ticket(payload: dict) -> bool:
     """
     global db
     try: 
+        # Safety checks
         if db is None:
             initialize_database()
 
@@ -78,6 +79,40 @@ def add_lost_ticket(payload: dict) -> bool:
     except Exception as e:
         logger.error(f"Error adding lost ticket to Firestore: {e}")
         return False
+
+def get_user_listings(chat_Id: int) -> list:
+    """
+    Fetches active or reclaimed item listings for a given user.
+    Returns a list if successful, or an empty list.
+    """
+    global db
+    try: 
+        # Safety checks
+        if db is None:
+            initialize_database()
+
+        if db is None:
+            logger.error("Cannot fetch user listings.")
+            return []
+        
+        # Retrieve from Firestore by user's Telegram chat_id
+        query_ref = db.collection("listings").where("finderChatId", "==", chat_id).stream()
+
+        # Return a list of objects containing all the data elements inside the document
+        # so that we can update or delete easily
+        user_listings = [
+            doc for doc in query_ref
+            if doc.to_dict().get("status") in ["active", "reclaimed", "spotted"]
+        ]
+
+        logger.info(f"Fetched {len(user_listings)} listings for user with chat_id {chat_id}.")
+        return user_listings
+    
+    except Exception as e:
+        logger.error(f"Error fetching user listings from Firestore: {e}")
+        return [] 
+
+
 
 if __name__ == "__main__":
     # Check if the connection to Firebase is successful
