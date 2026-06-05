@@ -17,11 +17,11 @@ export default function FindItNUSHeader() {
             <section className="relative flex flex-row items-center justify-center gap-4">
                 <button
                     type="button"
-                    className="absolute right-9 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md"
+                    className="absolute right-9 size-8 rounded-full bg-slate-100/10 z-0 border border-slate-200 shadow-md"
                 ></button>
                 <Info className="z-10" />
                 <Link href='/Profile'>
-                    <div className="absolute -right-1 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md"></div>
+                    <div className="absolute -right-1 size-8 rounded-full bg-slate-100/10 z-0 border border-slate-200 shadow-md"></div>
                     <User className="z-10" />
                 </Link>
             </section>
