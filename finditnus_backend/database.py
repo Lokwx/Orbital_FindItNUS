@@ -57,6 +57,27 @@ def add_item_listing(payload: dict) -> bool:
         logger.error(f"Error adding item listing to Firestore: {e}")
         return False
 
+def add_lost_ticket(payload: dict) -> bool:
+    """
+    Saves a new active search ticket into the 'lost_tickets' collection
+    Returns True if successful, False otherwise.
+    """
+    global db
+    try: 
+        if db is None:
+            initialize_database()
+
+        if db is None:
+            logger.error("Database not initialized. Cannot add lost ticket.")
+            return False
+
+        db.collection("lost_tickets").add(payload)
+        logger.info("Successfully added a new lost ticket to Firestore!")
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error adding lost ticket to Firestore: {e}")
+        return False
 
 if __name__ == "__main__":
     # Check if the connection to Firebase is successful
