@@ -36,6 +36,7 @@ export default function LandingPage() {
             <section>
                 <ButtonToMap/>
             </section>
+            <Divider className='py-2'/>
             <section className='py-1 flex flex-col gap-2 justify-center'>
                 <div className='flex justify-between items-center'>
                     <div className='flex'>
