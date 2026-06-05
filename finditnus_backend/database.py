@@ -32,6 +32,32 @@ def initialize_database():
         db = None
         return None
     
+def add_item_listing(payload: dict) -> bool:
+    """
+    Saves a new item listing into the 'listings' collection.
+    Returns True if successful, False otherwise.
+    """
+    global db
+    try:
+        # If db is not initialized yet
+        if db is None:
+            initialize_database()
+
+        # If db is still offline
+        if db is None:
+            logger.error("Database not initialized. Cannot add item listing.")
+            return False
+        
+        # Else, add listing
+        db.collection("listings").add(payload)
+        logger.info("Successfully added a new item listing to Firestore!")
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error adding item listing to Firestore: {e}")
+        return False
+
+
 if __name__ == "__main__":
     # Check if the connection to Firebase is successful
     logging.basicConfig(level=logging.INFO)
