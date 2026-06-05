@@ -2,11 +2,11 @@
 ### Unified Ecosystem for Campus Lost & Found
 
 <p align="center">
-  <img src="./team_logo.png" alt="FindItNUS Team Logo" width="200"/>width="200"/>
+  <img src="./team_logo.png" alt="FindItNUS Team Logo" >width="600"/>
 </p>
 
-Team Name: FindItNUS 
-Level of Achievement: Gemini
+* Team Name: FindItNUS 
+* Level of Achievement: Gemini
 
 ---
 
@@ -85,19 +85,19 @@ In Milestone 2, we are moving our text data to Firebase and our images to Cloudi
 
 ### System Architecture
 ![System Architecture](./system_architecture.jpg)
-*Figure 1: High-level data flow diagram showing how the Telegram Bot, Database, and React Frontend communicate
+Figure 1: High-level data flow diagram showing how the Telegram Bot, Database, and React Frontend communicate
 
 ---
 
 ## Frontend Application
-* **'LandingPage.tsx'**:
+* **`LandingPage.tsx`**:
 
 ## Backend Application
-* **'config.py'**: Handles environmental variables and holds connection settings safely.
-* **'database.py'**: Handles all reads, writes, updates and deletes for Firebase.
-* **'storage.py'**: Handles sending and deleting images on Cloudinary.
+* **`config.py`**: Handles environmental variables and holds connection settings safely.
+* **`database.py`**: Handles all reads, writes, updates and deletes for Firebase.
+* **`storage.py`**: Handles sending and deleting images on Cloudinary.
 
 ## Database 
 We use 2 main document collections in Firestore:
-1. **'listings'**: Stores active item text descriptions, location labels, coordinates, status flags, and Cloudinary image links.
-2. **'lost_tickets'**: Stores active search subscription tickets and filter tags created by users.
+1. **`listings`**: Stores active item text descriptions, location labels, coordinates, status flags, and Cloudinary image links.
+2. **`lost_tickets`**: Stores active search subscription tickets and filter tags created by users.
