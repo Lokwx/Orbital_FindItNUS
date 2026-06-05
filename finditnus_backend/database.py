@@ -80,9 +80,10 @@ def add_lost_ticket(payload: dict) -> bool:
         logger.error(f"Error adding lost ticket to Firestore: {e}")
         return False
 
-def get_user_listings(chat_Id: int) -> list:
+def get_user_listings(chat_id: int) -> list:
     """
     Fetches active or reclaimed item listings for a given user.
+    Used for /manage on Telegram Bot
     Returns a list if successful, or an empty list.
     """
     global db
@@ -112,7 +113,56 @@ def get_user_listings(chat_Id: int) -> list:
         logger.error(f"Error fetching user listings from Firestore: {e}")
         return [] 
 
+def update_listing_status(doc_id: str, new_status: str) -> bool:
+    """
+    Modifies an item's status flag (eg from 'active' to 'reclaimed').
+    Returns True if successful, False otherwise.
+    """
+    global db
+    try:
+        # Safety checks
+        if db is None:
+            initialize_database()
 
+        if db is None:
+            logger.error("Cannot update listing status.")
+            return False
+        
+        # Find the specific listing using the doc_id and update the 'status' field
+        db.collection("listings").document(doc_id).update({"status": new_status})
+
+        logger.info(f"Successfully updated listing {doc_id} to status '{new_status}'.")
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error updating listing status in Firestore: {e}")
+        return False
+
+def delete_listing(doc_id: str) -> bool:
+    """
+    Completely deletes a listing entirely from the database.
+    Returns True if successful, False otherwise.
+    """
+    global db
+    try:
+        # Safety checks
+        if db is None:
+            initialize_database()
+
+        if db is None:
+            logger.error("Cannot delete listing.")
+            return False
+        
+        # Find the specific listing using the doc_id and delete it
+        db.collection("listings").document(doc_id).delete()
+
+        logger.info(f"Successfully deleted listing {doc_id}.")
+        return True
+    
+    except Exception as e:
+        logger.error(f"Error deleting listing from Firestore: {e}")
+        return False
+    
 
 if __name__ == "__main__":
     # Check if the connection to Firebase is successful
