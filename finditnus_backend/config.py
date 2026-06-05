@@ -15,3 +15,10 @@ CLOUDINARY_NAME = os.environ.get("CLOUDINARY_NAME", "dy7cf8d3m")
 CLOUDINARY_API_KEY = os.environ.get("CLOUDINARY_API_KEY", "717616377814218")
 CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "FSmd68stuZoG5wOqldNg-Pr1vHk")
 
+# Development Mode Toggle
+IS_LOCAL_DEVELOPMENT = Path(ROOT_DIR / ".local_dev").exists()
+
+if IS_LOCAL_DEVELOPMENT:
+    WEB_APP_BASE_URL = "https://finditnus-testing.vercel.app"  
+else:
+    WEB_APP_BASE_URL = ""
