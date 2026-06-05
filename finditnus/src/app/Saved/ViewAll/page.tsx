@@ -27,7 +27,7 @@ export default function App() {
                     <Search className='absolute right-12 top-42.5 text-slate-500'/>
                 </div>
             </section>
-            <section className='flex flex-col gap-2 px-4 overflow-y-auto'>
+            <section className='flex flex-col gap-2 px-4 overflow-y-auto no-scrollbar'>
                 {/* Update the links once database items are ready */}
                 <Link href='/Saved?location=Engineering&returnURL=/Saved/ViewAll'>
                 <LocationBox 
@@ -71,9 +71,6 @@ export default function App() {
                     postalCode = {"123456"}
                 />
                 </Link>  
-            </section>
-            <section className='flex h-10 m-2'>
-                <BotLinkButton/>
             </section>
         </main>
     )
