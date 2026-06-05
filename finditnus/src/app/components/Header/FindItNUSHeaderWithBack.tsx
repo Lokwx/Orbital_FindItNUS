@@ -1,35 +1,33 @@
-'use client'
+'use client';
 
-import { Info, User, ChevronLeft } from 'lucide-react'
+import { Info, User, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
 type PropType = {
-    returnURL:string
-}
+    returnURL: string;
+};
 
-export default function FindItNUSHeader({returnURL}:PropType) {
+export default function FindItNUSHeader({ returnURL }: PropType) {
     const router = useRouter();
 
-    const handleBack = (returnURL:string) => {
-        router.push(returnURL)
-    }
+    const handleBack = (returnURL: string) => {
+        router.push(returnURL);
+    };
 
     return (
         <header className="relative flex flex-row items-center justify-between py-5 z-10">
-            <div className='flex items-center gap-4'>
-                    <button
-                        type='button'
-                        onClick={() => handleBack(returnURL)}
-                        className='bg-slate-200/10 border border-slate-400 shadow-md rounded-full size-8 items-center justify-center flex'
-                    >
-                    <ChevronLeft/>
-                    </button>
+            <div className="flex items-center gap-4">
+                <button
+                    type="button"
+                    onClick={() => handleBack(returnURL)}
+                    className="bg-slate-200/10 border border-slate-400 shadow-md rounded-full size-8 items-center justify-center flex"
+                >
+                    <ChevronLeft />
+                </button>
             </div>
             <section className="relative flex flex-row items-center justify-center">
-                <div
-                    className="absolute -left-1 size-10 rounded-2xl bg-orange-300/40 shadow-md z-0"
-                ></div>
+                <div className="absolute -left-1 size-10 rounded-2xl bg-orange-300/40 shadow-md z-0"></div>
                 <img
                     alt="FindItNUS logo"
                     className="relative size-8"
@@ -43,11 +41,12 @@ export default function FindItNUSHeader({returnURL}:PropType) {
                     className="absolute right-9 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md"
                 ></button>
                 <Info className="z-10" />
-                <button
-                    type="button"
-                    className="absolute -right-1 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md"
-                ></button>
-                <User className="z-10" />
+                <Link href="/Profile">
+                    <div
+                        className="absolute -right-1 size-8 rounded-full bg-slate-400/10 z-0 border border-slate-200 shadow-md"
+                    ></div>
+                    <User className="z-10" />
+                </Link>
             </section>
         </header>
     );

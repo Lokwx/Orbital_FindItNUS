@@ -88,6 +88,10 @@ const NUS_AREA_COORDINATES = {
         "latitude": 1.2999118637462117,
         "longitude": 103.77551105402769,
     },
+    "NUS": {
+        "latitude": 1.2975810637778415,
+        "longitude": 103.77788569888554,
+    }
 }
 
 type NusArea = keyof typeof NUS_AREA_COORDINATES
@@ -98,7 +102,7 @@ type MapProps = {
 
 
 export default function Map({location}:MapProps) {
-    const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : "Computing";
+    const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : "NUS";
     const originX = NUS_AREA_COORDINATES[area].latitude;
     const originY = NUS_AREA_COORDINATES[area].longitude;
     const position: [number, number] = [originX, originY];

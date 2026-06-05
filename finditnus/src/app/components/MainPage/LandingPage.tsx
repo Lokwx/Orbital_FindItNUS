@@ -3,13 +3,14 @@
 import { useState } from 'react'
 
 import { Divider } from '@mui/material'
-import { Info, User, Search, Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPin } from 'lucide-react'
+import { Search, Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPin } from 'lucide-react'
 
 
 import Link from "next/link";
 
 import FindItNUSHeader from '@/app/components/Header/FindItNUSHeader'
 import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton';
+import ButtonToMap from '@/app/components/Map/ButtonToMap'
 
 export default function LandingPage() {
     const [searchInput, setSearchInput] = useState("");
@@ -32,7 +33,10 @@ export default function LandingPage() {
                 </input>
                 <Search className='absolute right-4 top-1/2 -translate-y-1/2 size-5'/>
             </section>
-            <section className='py-4 flex flex-col gap-2 justify-center'>
+            <section>
+                <ButtonToMap/>
+            </section>
+            <section className='py-1 flex flex-col gap-2 justify-center'>
                 <div className='flex justify-between items-center'>
                     <div className='flex'>
                         <Bookmark className='text-indigo-500'/>
