@@ -5,8 +5,8 @@ import { useState } from 'react'
 import { Divider } from '@mui/material'
 import { Search, Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPin } from 'lucide-react'
 
-
 import Link from "next/link";
+import Image from "next/image"
 
 import FindItNUSHeader from '@/app/components/Header/FindItNUSHeader'
 import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton';
@@ -91,25 +91,51 @@ export default function LandingPage() {
                         <h1 className='pl-2 text-front font-semibold'>RECENT</h1>
                     </div>
                     <div className='font-semibold text-indigo-500 px-2 py-2'>
+                        <Link
+                            href='/Recent'
+                            className='px-2 py-2'
+                        >
                         SEE ALL
+                        </Link>
                     </div>
                 </div>
                 <div className="rounded-2xl">
                     <ul className='list-none font-sans border-black shadow-md rounded-2xl'>
                         <li className='px-2 flex items-center gap-2 py-2'>
-                            <MapPin className='size-6 shrink-0'/>
+                            <Image 
+                                src="/icons/google-maps.svg"
+                                alt='google maps icon'
+                                width={32}
+                                height={32}
+                                className='size-8'    
+                            >
+                            </Image>
                             <span className='text-xl'>NUS Central Library<br/> 
                                 <span className='text-sm text-slate-400'>119275</span>
                             </span>
                         </li>
                         <li className='px-2 flex items-center gap-2 py-2'>
-                            <MapPin className='size-6 shrink-0'/>
-                            <span className='text-xl'>NUS College of Design and Engineering<br/> 
+                            <Image 
+                                src="/icons/google-maps.svg"
+                                alt='google maps icon'
+                                width={32}
+                                height={32}
+                                className='size-8'    
+                            >
+                            </Image>
+                            <span className='text-xl'>College of Design and Engineering<br/> 
                                 <span className='text-sm text-slate-400'>117575</span>
                             </span>
                         </li>
-                        <li className='px-2 flex items-center gap-2 py-2 shrink-0'>
-                            <MapPin className='size-6'/>
+                        <li className='px-2 flex items-center gap-2 py-2'>
+                            <Image 
+                                src="/icons/google-maps.svg"
+                                alt='google maps icon'
+                                width={32}
+                                height={32}
+                                className='size-8'    
+                            >
+                            </Image>
                             <span className='text-xl'>COM3<br/>
                                 <span className='text-sm text-slate-400'>119391</span>
                             </span>
