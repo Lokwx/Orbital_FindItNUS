@@ -219,7 +219,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         parse_mode = "HTML"
     )
 
-async def handle_button_clicks(update: Update, context: ContextTypes_DEFAULT_TYPE) -> None:
+async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handles the button clicks to route user interactions accordingly.
     """
@@ -228,12 +228,15 @@ async def handle_button_clicks(update: Update, context: ContextTypes_DEFAULT_TYP
     await query.answer()
     data = query.data
 
+    user_flow = context.user_data.get("user_flow", "info")
+    prefix = "🟢 Finder" if user_flow == "finder" else "🔵 Loser"
+
     # Handles role selection for Finder or Loser
     if data in ["flow_finder", "flow_loser"]:
         context.user_data["user_flow"] = "finder" if data == "flow_finder" else "loser"
         
         target_keyboard = MACRO_ZONE_KEYBOARD if data == "flow_finder" else LOSER_MACRO_ZONE_KEYBOARD   
-        text = "<b>🟢 Finder Mode</b>\n\nSelect the Faculty zone:" if data == "flow_finder" else "<b>🔵 Loser Mode</b>\n\nSelect the Faculty zone:"
+        text = "<b>🟢 Finder Mode</b>\n\nSelect the faculty zone:" if data == "flow_finder" else "<b>🔵 Loser Mode</b>\n\nSelect the faculty zone:"
 
         # Edit existing message instead of sending the a new message
         await query.edit_message_text(
@@ -250,8 +253,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes_DEFAULT_TYP
         fac_name = ZONE_NAME_MAP.get(data, "Campus Facility")
 
         # Checks user's role before printing specific menu
-        user_role = context.user_data.get("user_flow")
-        if user_role == "finder":
+        if user_flow == "finder":
             header = f"<b>🟢 Finder</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
         else:
             header = f"<b>🔵 Loser</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
@@ -261,6 +263,86 @@ async def handle_button_clicks(update: Update, context: ContextTypes_DEFAULT_TYP
         reply_markup = InlineKeyboardMarkup(ZONE_KEYBOARD_MAP[data]),
         parse_mode = "HTML"
     )
+
+    # Handles micro location selection
+    elif data.startswith("spot_"):
+        context.user_data["active_micro_key"] = data
+
+        text = f"<b>{prefix}</b> ➔ <b>Spot Selected</b>\n\nWhat category does this item fall into?"
+
+        await query.edit_message_text(
+            text = text,
+            reply_markup = InlineKeyboardMarkup(CATEGORY_KEYBOARD),
+            parse_mode = "HTML"
+    )
+        
+    # Handles category selection
+    elif data.startswith("cat_"):
+        context.user_data["active_category_key"] = data
+
+        user_flow = context.user_data.get("user_flow")
+
+        if user_flow == "finder":
+            context.user_data["state"] = "AWAITING_PHOTO"
+            text = (
+                f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
+                "📸 Please upload an image of the item you found.\n"
+                "This image will be used to identify the item."
+            )
+        
+        await query.edit_message_text(
+            text = text,
+            reply_markup = None,
+            parse_mode = "HTML"
+        )
+
+async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Saves the image uploaded by Finder and uploads it to Cloudinary,
+    followed by a description of the image.
+    """
+    if context.user_data.get("user_flow") != "finder" or "active_category_key" not in context.user_data:
+        return
+    
+    # Saves the uploaded image
+    image = update.message.photo[-1]
+    image_file = await image.get_file()
+
+    # Provides a status update to user
+    status_text = await update.message.reply_text(
+        text = "<b>⏳Processing the image...</b>",
+        parse_mode = "HTML"
+    )
+
+    try:
+        # Download the image file into memory bytes
+        image_bytes = await image_file.download_as_bytearray()
+        # Send the image bytes to storage.py and get back secure_url and public_url tuple
+        secure_url, public_id = storage.upload_image(bytes(image_bytes))
+
+        if secure_url and public_id:
+            context.user_data["temp_img_url"] = secure_url
+            context.user_data["temp_public_id"] = public_id
+            context.user_data["state"] = "AWAITING_DESCRIPTION"
+
+            # Ask Finder for a short description of the uploaded image
+            await update.message.reply_text(
+                text = (
+                "<b>🟢 Finder Mode</b> ➔ <b>Image Saved Successfully!</b> ✅\n\n"
+                "<b>✍️ Please type a short description of the item you found.</b>\n"
+                "Example: Found a black iPhone at COM1 basement study area"
+                ),
+                    parse_mode = "HTML"
+            )
+        else:
+            await update.message.reply_text("Error!")
+
+    except Exception as e:
+        logger.error(f"Upload failed: {e}")
+        await update.message.reply_text("❌ Something went wrong while saving the image. Please try again!")
+
+    finally:
+        await status_text.delete()
     
 def main() -> None:
     # Initilize Telegram framework using the necessary config details
@@ -269,6 +351,8 @@ def main() -> None:
     app.add_handler(CommandHandler("start", start))
 
     app.add_handler(CallbackQueryHandler(handle_button_clicks))
+
+    app.add_handler(MessageHandler(filters.PHOTO, handle_finder_photo))
 
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
