@@ -155,6 +155,7 @@ ZONE_KEYBOARD_MAP = {
         [InlineKeyboardButton("🖊️ Custom Spot", callback_data="spot_custom_input"), InlineKeyboardButton("⬅️ Back", callback_data="back_to_macro")]
     ]
 }
+
 # 'Categories' Button for Telegram interface
 CATEGORY_KEYBOARD = [
     [InlineKeyboardButton("📱 Electronics", callback_data="cat_electronics"), InlineKeyboardButton("🔑 Keys / Access Cards", callback_data="cat_keys")],
@@ -163,6 +164,7 @@ CATEGORY_KEYBOARD = [
     [InlineKeyboardButton("❌ Cancel", callback_data="action_cancel")]
 ]
 
+# 'Macro_zone' Button for Loser's status
 LOSER_MACRO_ZONE_KEYBOARD = [
     [InlineKeyboardButton("🌍 Entire Campus / Unsure", callback_data="zone_all_campus")],
     [InlineKeyboardButton("💻 Computing", callback_data="zone_computing"), InlineKeyboardButton("🔬 Science", callback_data="zone_science")],
