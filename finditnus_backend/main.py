@@ -219,10 +219,56 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         parse_mode = "HTML"
     )
 
+async def handle_button_clicks(update: Update, context: ContextTypes_DEFAULT_TYPE) -> None:
+    """
+    Handles the button clicks to route user interactions accordingly.
+    """
+    # Receive and extract the callback_data from the user
+    query = update.callback_query
+    await query.answer()
+    data = query.data
+
+    # Handles role selection for Finder or Loser
+    if data in ["flow_finder", "flow_loser"]:
+        context.user_data["user_flow"] = "finder" if data == "flow_finder" else "loser"
+        
+        target_keyboard = MACRO_ZONE_KEYBOARD if data == "flow_finder" else LOSER_MACRO_ZONE_KEYBOARD   
+        text = "<b>🟢 Finder Mode</b>\n\nSelect the Faculty zone:" if data == "flow_finder" else "<b>🔵 Loser Mode</b>\n\nSelect the Faculty zone:"
+
+        # Edit existing message instead of sending the a new message
+        await query.edit_message_text(
+            text = text,
+            reply_markup = InlineKeyboardMarkup(target_keyboard),
+            parse_mode = "HTML"
+        )
+
+    # Handles macro location selection
+    elif data in ZONE_KEYBOARD_MAP:
+        context.user_data["active_macro_key"] = data
+
+        # Save the name of specific macro locations
+        fac_name = ZONE_NAME_MAP.get(data, "Campus Facility")
+
+        # Checks user's role before printing specific menu
+        user_role = context.user_data.get("user_flow")
+        if user_role == "finder":
+            header = f"<b>🟢 Finder</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
+        else:
+            header = f"<b>🔵 Loser</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
+
+        await query.edit_message_text(
+        text = header,
+        reply_markup = InlineKeyboardMarkup(ZONE_KEYBOARD_MAP[data]),
+        parse_mode = "HTML"
+    )
+    
 def main() -> None:
     # Initilize Telegram framework using the necessary config details
     app = Application.builder().token(TELEGRAM_TOKEN).build()
+
     app.add_handler(CommandHandler("start", start))
+
+    app.add_handler(CallbackQueryHandler(handle_button_clicks))
 
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
