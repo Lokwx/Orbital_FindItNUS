@@ -339,7 +339,12 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     except Exception as e:
         logger.error(f"Upload failed: {e}")
-        await update.message.reply_text("❌ Something went wrong while saving the image. Please try again!")
+        await update.message.reply_text(
+            text = (
+                "❌ Something went wrong while saving the image. Please try again!"
+                ),
+                parse_mode = "HTML"
+        )
 
     finally:
         await status_text.delete()
