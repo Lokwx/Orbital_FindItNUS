@@ -475,7 +475,7 @@ def database_saver(user_data: dict, chat_id: int, description_text: str) -> None
     else:
         # If user clicked a micro location, convert it to a proper string, spot_com1 becomes Com 1
         micro_name = micro_key.replace("spot_", "").replace("_", " ").title()
-        lat, long = get_coordinates(micro_key, apply_jitter = False)
+        lat, long = get_coordinates(micro_key, apply_jitter = True)
 
     # Build the database payload dictionary
     payload = {
@@ -483,7 +483,7 @@ def database_saver(user_data: dict, chat_id: int, description_text: str) -> None
         "userRole": user_flow,
         "category": user_data.get("active_category_key", "cat_others").replace("cat_", ""),
         "macro_location": macro_name,
-        "micro_locaton": micro_name,
+        "micro_location": micro_name,
         "description": description_text.strip(),
         "imageUrl": user_data.get("temp_img_url"),
         "cloudinaryPublicId": user_data.get("temp_public_id"),
