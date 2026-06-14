@@ -161,7 +161,7 @@ CATEGORY_KEYBOARD = [
     [InlineKeyboardButton("📱 Electronics", callback_data="cat_electronics"), InlineKeyboardButton("🔑 Keys / Access Cards", callback_data="cat_keys")],
     [InlineKeyboardButton("💼 Wallets & Bags", callback_data="cat_wallets"), InlineKeyboardButton("🍼 Bottles / Umbrellas", callback_data="cat_bottles")],
     [InlineKeyboardButton("📦 Others / Miscellaneous", callback_data="cat_others")],
-    [InlineKeyboardButton("❌ Cancel", callback_data="action_cancel")]
+    [InlineKeyboardButton("❌ Cancel Report", callback_data="action_cancel")]
 ]
 
 # 'Macro_zone' Button for Loser's status
@@ -201,15 +201,15 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     first_name = update.effective_user.first_name
     welcome_message = (
         f"Hi {first_name}! 👋 Welcome to <b>FinditNUS</b> \n\n"
-        "Let's look for your campus belongings!\n" "Are you reporting an item you found, or searching for something you lost?"
+        "Let's look for your campus belongings!\n\n" 
+        "Are you reporting an item you found, or searching for something you lost?"
         )
     
-    # Assign a role to the user, either a Finder or Loser
+    # Assign a role to the user, either a Finder/ Spotter/ Loser
     keyboard = [
-        [
-            InlineKeyboardButton("📦 I Found an Item", callback_data="flow_finder"),
-            InlineKeyboardButton("🔍 I Lost an Item", callback_data="flow_loser")
-        ]
+            [InlineKeyboardButton("📦 I Found an Item", callback_data = "flow_finder")],
+            [InlineKeyboardButton("🔍 I Spotted an Item", callback_data = "flow_spotted")],
+            [InlineKeyboardButton("❓ I Lost an Item", callback_data = "flow_loser")]
     ]
 
     # Display the message on chat
@@ -229,14 +229,28 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     data = query.data
 
     user_flow = context.user_data.get("user_flow", "info")
-    prefix = "🟢 Finder" if user_flow == "finder" else "🔵 Loser"
+
+    if user_flow == "finder":
+        prefix = "🟢 Finder"
+    elif user_flow == "spotted":
+        prefix = "🟡 Spotter"
+    else:
+        prefix = "🔵 Loser"
 
     # Handles role selection for Finder or Loser
-    if data in ["flow_finder", "flow_loser"]:
-        context.user_data["user_flow"] = "finder" if data == "flow_finder" else "loser"
-        
-        target_keyboard = MACRO_ZONE_KEYBOARD if data == "flow_finder" else LOSER_MACRO_ZONE_KEYBOARD   
-        text = "<b>🟢 Finder Mode</b>\n\nSelect the faculty zone:" if data == "flow_finder" else "<b>🔵 Loser Mode</b>\n\nSelect the faculty zone:"
+    if data in ["flow_finder", "flow_spotted", "flow_loser"]:
+        if data == "flow_finder":
+            context.user_data["user_flow"] = "finder"
+            text = "<b>🟢 Finder Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = MACRO_ZONE_KEYBOARD
+        elif data == "flow_spotted":
+            context.user_data["user_flow"] = "spotted"
+            text = "<b>🟡 Spotter Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = MACRO_ZONE_KEYBOARD
+        else:
+            context.user_data["user_flow"] = "loser"
+            text = "🔵 Loser Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = LOSER_MACRO_ZONE_KEYBOARD
 
         # Edit existing message instead of sending the a new message
         await query.edit_message_text(
@@ -253,8 +267,8 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
         fac_name = ZONE_NAME_MAP.get(data, "Campus Facility")
 
         # Checks user's role before printing specific menu
-        if user_flow == "finder":
-            header = f"<b>🟢 Finder</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
+        if user_flow in ["finder", "spotted"]:
+            header = f"<b>{prefix}</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
         else:
             header = f"<b>🔵 Loser</b> ➔ <b>{fac_name}</b>\n\nSelect a primary landmark spot:"
 
@@ -279,19 +293,47 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     # Handles category selection
     elif data.startswith("cat_"):
         context.user_data["active_category_key"] = data
-
         user_flow = context.user_data.get("user_flow")
 
-        if user_flow == "finder":
+        if user_flow in ["finder", "spotted"]:
             context.user_data["state"] = "AWAITING_PHOTO"
+            action = "found" if user_flow == "finder" else "spotted"
             text = (
                 f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
-                "📸 Please upload an image of the item you found.\n"
-                "This image will be used to identify the item."
+                f"📸 Please upload an image of the item you {action}.\n"
+                f"This image will be used to identify the item."
             )
-        
+        else:
+            text = f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
+
         await query.edit_message_text(
             text = text,
+            reply_markup = None,
+            parse_mode = "HTML"
+        )
+
+    elif data == "back_to_macro":
+        if user_flow == "loser":
+            text = "<b>🔵 Loser Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = LOSER_MACRO_ZONE_KEYBOARD
+        elif user_flow == "spotted":
+            text = "<b>🟡 Spotter Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = MACRO_ZONE_KEYBOARD
+        else:
+            text = "<b>🟢 Finder Mode</b>\n\nSelect the faculty zone:"
+            target_keyboard = MACRO_ZONE_KEYBOARD
+
+        await query.edit_message_text(
+            text = text,
+            reply_markup = InlineKeyboardMarkup(target_keyboard),
+            parse_mode = "HTML"
+        )
+
+    elif data == "action_cancel":
+        context.user_data.clear()
+
+        await query.edit_message_text(
+            text = "<b>❌ Session Aborted.</b>\n\nIf you wish to submit another report, please type or click /start.",
             reply_markup = None,
             parse_mode = "HTML"
         )
@@ -301,9 +343,15 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
     Saves the image uploaded by Finder and uploads it to Cloudinary,
     followed by a description of the image.
     """
-    if context.user_data.get("user_flow") != "finder" or "active_category_key" not in context.user_data:
+    user_flow = context.user_data.get("user_flow")
+
+    if context.user_data.get("user_flow") not in ["finder", "spotted"] or "active_category_key" not in context.user_data:
         return
     
+    prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
+    action = "found" if user_flow == "finder" else "spotted"
+    example = "Found" if user_flow == "finder" else "Spotted"
+
     # Saves the uploaded image
     image = update.message.photo[-1]
     image_file = await image.get_file()
@@ -328,9 +376,9 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
             # Ask Finder for a short description of the uploaded image
             await update.message.reply_text(
                 text = (
-                "<b>🟢 Finder Mode</b> ➔ <b>Image Saved Successfully!</b> ✅\n\n"
-                "<b>✍️ Please type a short description of the item you found.</b>\n"
-                "Example: Found a black iPhone at COM1 basement study area"
+                    f"<b>{prefix} Mode</b> ➔ <b>Image Saved Successfully!</b> ✅\n\n"
+                    f"<b>✍️ Please type a short description of the item you {action}.</b>\n"
+                    f"Example: {example} a black iPhone at COM1 basement study area"
                 ),
                     parse_mode = "HTML"
             )
