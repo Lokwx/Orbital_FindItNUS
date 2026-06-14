@@ -5,7 +5,7 @@ import hashlib
 import time
 import threading
 from http.server import BaseHTTPRequestHandler, HTTPServer
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update, BotCommand, WebAppInfo
 from telegram.ext import Application, CallbackQueryHandler, CommandHandler, MessageHandler, ContextTypes, filters
 
@@ -249,7 +249,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
             target_keyboard = MACRO_ZONE_KEYBOARD
         else:
             context.user_data["user_flow"] = "loser"
-            text = "🔵 Loser Mode</b>\n\nSelect the faculty zone:"
+            text = "<b>🔵 Loser Mode</b>\n\nSelect the faculty zone:"
             target_keyboard = LOSER_MACRO_ZONE_KEYBOARD
 
         # Edit existing message instead of sending the a new message
@@ -277,6 +277,15 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
         reply_markup = InlineKeyboardMarkup(ZONE_KEYBOARD_MAP[data]),
         parse_mode = "HTML"
     )
+
+    # Handles custom input selection
+    elif data == "spot_custom_input":
+        context.user_data["state"] = "AWAITING_CUSTOM_SPOT"
+        await query.edit_message_text(
+            text = f"<b>{prefix}</b> ➔ <b>Custom Location</b>\n\nPlease type a specific description of where the item is located.",
+            reply_markup = None,
+            parse_mode = "HTML"
+        )
 
     # Handles micro location selection
     elif data.startswith("spot_"):
@@ -340,8 +349,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    Saves the image uploaded by Finder and uploads it to Cloudinary,
-    followed by a description of the image.
+    Saves the image uploaded by Finder and uploads it to Cloudinary
     """
     user_flow = context.user_data.get("user_flow")
 
@@ -396,7 +404,81 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     finally:
         await status_text.delete()
+
+async def handle_user_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Collects and saves image description
+    """
+    # Guardrail in case user types something in the chat that is not for the item description
+    if context.user_data.get("state") != "AWAITING_DESCRIPTION":
+        return
     
+    chat_id = update.effective_chat.id
+    description_text = update.message.text
+    user_flow = context.user_data.get("user_flow")
+
+    try:
+        # Pass the saved parameters to the database function
+        database_saver(context.user_data, chat_id, description_text)
+
+        # Send status update to user
+        prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
+        await update.message.reply_text(
+            text = (
+                f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉\n\n"
+                "Thank you! Your listing has been saved successfully!\n"
+                "Students can access this on the map now."
+            ),
+            parse_mode = "HTML"
+        )
+        # Clear the current saved parameters in the chat
+        context.user_data.clear()
+    
+    except Exception as e:
+        logger.error(f"Posting failure: {e}")
+        await update.message.reply_text("Failed to publish listing. Try again!")
+
+def database_saver(user_data: dict, chat_id: int, description_text: str) -> None:
+    """
+    Process chat parameters and package it for database upload
+    """
+    # Unpack chat parameters into new variables
+    user_flow = user_data.get("user_flow")
+    macro_key = user_data.get("active_macro_key")
+    micro_key = user_data.get("active_micro_key")
+
+    macro_name = ZONE_NAME_MAP.get(macro_key, "Custom/Unspecified")
+
+    # Check if location is a custom spot
+    if user_data.get("state") == "AWAITING_CUSTOM_SPOT" or micro_key == "spot_custom_input":
+        micro_name = user_data.get("custom_spot_text", "Custom Location")
+        # Set custom spot's location as macro location coordinates
+        lat, long = get_coordinates(macro_key, apply_jitter = False)
+    else:
+        # If user clicked a micro location, convert it to a proper string, spot_com1 becomes Com 1
+        micro_name = micro_key.replace("spot_", "").replace("_", " ").title()
+        lat, long = get_coordinates(micro_key, apply_jitter = False)
+
+    # Build the database payload dictionary
+    payload = {
+        "chatId": chat_id,
+        "userRole": user_flow,
+        "category": user_data.get("active_category_key", "cat_others").replace("cat_", ""),
+        "macro_location": macro_name,
+        "micro_locaton": micro_name,
+        "description": description_text.strip(),
+        "imageUrl": user_data.get("temp_img_url"),
+        "cloudinaryPublicId": user_data.get("temp_public_id"),
+        "status": "active",
+        "timestamp": datetime.now(timezone.utc),
+        "coordinates": {"lat": lat, "long": long}
+    }
+    # Establish connection to Firebase and look for 'listings'
+    success = database.add_item_listing(payload)
+
+    if not success:
+        raise RuntimeError("Database is offline!")
+
 def main() -> None:
     # Initilize Telegram framework using the necessary config details
     app = Application.builder().token(TELEGRAM_TOKEN).build()
@@ -406,6 +488,8 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(handle_button_clicks))
 
     app.add_handler(MessageHandler(filters.PHOTO, handle_finder_photo))
+
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_description))
 
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
