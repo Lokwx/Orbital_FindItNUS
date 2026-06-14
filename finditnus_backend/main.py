@@ -405,38 +405,56 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
     finally:
         await status_text.delete()
 
-async def handle_user_description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
-    Collects and saves image description
+    Handles all incoming text messages from users.
+    Differentiates behaviours based on the 'state' flag in session memory.
     """
-    # Guardrail in case user types something in the chat that is not for the item description
-    if context.user_data.get("state") != "AWAITING_DESCRIPTION":
-        return
-    
-    chat_id = update.effective_chat.id
-    description_text = update.message.text
+    # Check the current state of the user
+    curr_state = context.user_data.get("state")
     user_flow = context.user_data.get("user_flow")
+    prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
 
-    try:
-        # Pass the saved parameters to the database function
-        database_saver(context.user_data, chat_id, description_text)
+    # 1. User is at the custom location description question
+    if curr_state == "AWAITING_CUSTOM_SPOT":
+        custom_text = update.message.text.strip()
+        context.user_data["custom_spot_text"] = custom_text
+        context.user_data["active_micro_key"] = "spot_custom_input"
+        # Clear the user's state before they move to the next question
+        context.user_data["state"] = None
 
-        # Send status update to user
-        prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
         await update.message.reply_text(
-            text = (
-                f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉\n\n"
-                "Thank you! Your listing has been saved successfully!\n"
-                "Students can access this on the map now."
-            ),
+            text = f"<b>{prefix}</b> ➔ <b>Custom Spot Saved:</b> <i>{custom_text}</i>\n\nWhat category does this item fall into?",
+            reply_markup = InlineKeyboardMarkup(CATEGORY_KEYBOARD),
             parse_mode = "HTML"
         )
-        # Clear the current saved parameters in the chat
-        context.user_data.clear()
-    
-    except Exception as e:
-        logger.error(f"Posting failure: {e}")
-        await update.message.reply_text("Failed to publish listing. Try again!")
+
+    # 2. User is at the item description question
+    elif curr_state == "AWAITING_DESCRIPTION":
+        chat_id = update.effective_chat.id
+        description_text = update.message.text
+        user_flow = context.user_data.get("user_flow")
+
+        try:
+            # Pass the saved parameters to the database function
+            database_saver(context.user_data, chat_id, description_text)
+
+            # Send status update to user
+            prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
+            await update.message.reply_text(
+                text = (
+                    f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉\n\n"
+                    "Thank you! Your listing has been saved successfully!\n"
+                    "Students can access this on the map now."
+                ),
+                parse_mode = "HTML"
+            )
+            # Clear the current saved parameters in the chat
+            context.user_data.clear()
+        
+        except Exception as e:
+            logger.error(f"Posting failure: {e}")
+            await update.message.reply_text("Failed to publish listing. Try again!")
 
 def database_saver(user_data: dict, chat_id: int, description_text: str) -> None:
     """
@@ -489,7 +507,7 @@ def main() -> None:
 
     app.add_handler(MessageHandler(filters.PHOTO, handle_finder_photo))
 
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_description))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_inputs))
 
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
