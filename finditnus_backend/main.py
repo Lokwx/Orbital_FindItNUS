@@ -302,21 +302,10 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     # Handles category selection
     elif data.startswith("cat_"):
         context.user_data["active_category_key"] = data
-        user_flow = context.user_data.get("user_flow")
-
-        if user_flow in ["finder", "spotted"]:
-            context.user_data["state"] = "AWAITING_PHOTO"
-            action = "found" if user_flow == "finder" else "spotted"
-            text = (
-                f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
-                f"📸 Please upload an image of the item you {action}.\n"
-                f"This image will be used to identify the item."
-            )
-        else:
-            text = f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
+        context.user_data["state"] = "AWAITING_ITEM_NAME"
 
         await query.edit_message_text(
-            text = text,
+            text = "What is the item's name?",
             reply_markup = None,
             parse_mode = "HTML"
         )
@@ -429,7 +418,33 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             parse_mode = "HTML"
         )
 
-    # 2. User is at the item description question
+    # 2. User is at the item name question
+    elif curr_state == "AWAITING_ITEM_NAME":
+        context.user_data["item_name"] = update.message.text.strip()
+
+        if user_flow in ["finder", "spotted"]:
+            context.user_data["state"] = "AWAITING_PHOTO"
+            action = "found" if user_flow == "finder" else "spotted"
+            text = (
+                f"<b>{prefix}</b> ➔ <b>Category confirmed</b>\n\n"
+                f"📸 Please upload an image of the item you {action}.\n"
+                f"This image will be used to identify the item."
+            )
+
+            await update.message.reply_text(
+                text = text,
+                parse_mode = "HTML"
+            )
+
+        else:
+            context.user_data["state"] = "AWAITING_DESCRIPTION"
+
+            await update.message.reply_text(
+                text = "Please describe the item",
+                parse_mode = "HTML"
+            )
+
+    # 3. User is at the item description question
     elif curr_state == "AWAITING_DESCRIPTION":
         chat_id = update.effective_chat.id
         description_text = update.message.text
@@ -479,6 +494,7 @@ def database_saver(user_data: dict, chat_id: int, description_text: str) -> None
 
     # Build the database payload dictionary
     payload = {
+        "ItemName": user_data.get("item_name"),
         "chatId": chat_id,
         "userRole": user_flow,
         "category": user_data.get("active_category_key", "cat_others").replace("cat_", ""),
