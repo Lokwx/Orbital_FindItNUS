@@ -26,7 +26,7 @@ const getItemData = async () => {
 }
 
 const getAllItemData = async () => {
-    const collectionRef = collectionGroup(db, "Reports");
+    const collectionRef = collection(db, "listings");
     const collectionSnap = await getDocs(collectionRef);
 
     const items = [];

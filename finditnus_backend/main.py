@@ -446,13 +446,14 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     # 3. User is at the item description question
     elif curr_state == "AWAITING_DESCRIPTION":
-        chat_id = update.effective_chat.id
+        chat_id = update.effective_user.id
+        username = update.effective_user.username
         description_text = update.message.text
         user_flow = context.user_data.get("user_flow")
 
         try:
             # Pass the saved parameters to the database function
-            database_saver(context.user_data, chat_id, description_text)
+            database_saver(context.user_data, chat_id, username, description_text)
 
             # Send status update to user
             prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
@@ -471,7 +472,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             logger.error(f"Posting failure: {e}")
             await update.message.reply_text("Failed to publish listing. Try again!")
 
-def database_saver(user_data: dict, chat_id: int, description_text: str) -> None:
+def database_saver(user_data: dict, chat_id: int, username: str, description_text: str) -> None:
     """
     Process chat parameters and package it for database upload
     """
@@ -492,20 +493,50 @@ def database_saver(user_data: dict, chat_id: int, description_text: str) -> None
         micro_name = micro_key.replace("spot_", "").replace("_", " ").title()
         lat, long = get_coordinates(micro_key, apply_jitter = True)
 
+    if user_flow == "finder":
+        report_type = "found"
+    elif user_flow == "spotted":
+        report_type = "spotted"
+    else:
+        report_type = "lost"
+
+    now = datetime.now(timezone.utc)
+    
+
     # Build the database payload dictionary
     payload = {
+        # Particulars
+        "UserID": chat_id,
+        "UserName": username,
+        
+        # ReportType
+        "ReportType": report_type,
         "ItemName": user_data.get("item_name"),
-        "chatId": chat_id,
-        "userRole": user_flow,
-        "category": user_data.get("active_category_key", "cat_others").replace("cat_", ""),
-        "macro_location": macro_name,
-        "micro_location": micro_name,
-        "description": description_text.strip(),
+        "ItemCategory": user_data.get("active_category_key", "cat_others").replace("cat_", ""),
+        "ItemDescription": description_text.strip(),
+
+        # Location
+        "ItemLocationInput": "", #TODO
+        "ItemLocation": macro_name,
+        "ItemLocationDetail": micro_name,
+        "Latitude": lat,
+        "Longitude": long,
+
+        # Time
+        "UserSubmitTiming": now,
+        "Year": now.year,
+        "Month": now.month,
+        "Day": now.day,
+        "Hour": now.hour,
+        "Minute": now.minute,
+        "Second": now.second,
+
+        # Image
         "imageUrl": user_data.get("temp_img_url"),
         "cloudinaryPublicId": user_data.get("temp_public_id"),
-        "status": "active",
-        "timestamp": datetime.now(timezone.utc),
-        "coordinates": {"lat": lat, "long": long}
+
+        # Item Status
+        "Status": "active",
     }
     # Establish connection to Firebase and look for 'listings'
     success = database.add_item_listing(payload)

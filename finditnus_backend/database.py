@@ -97,13 +97,13 @@ def get_user_listings(chat_id: int) -> list:
             return []
         
         # Retrieve from Firestore by user's Telegram chat_id
-        query_ref = db.collection("listings").where("finderChatId", "==", chat_id).stream()
+        query_ref = db.collection("listings").where("UserID", "==", chat_id).stream()
 
         # Return a list of objects containing all the data elements inside the document
         # so that we can update or delete easily
         user_listings = [
             doc for doc in query_ref
-            if doc.to_dict().get("status") in ["active", "reclaimed", "spotted"]
+            if doc.to_dict().get("Status") in ["active", "reclaimed", "spotted"]
         ]
 
         logger.info(f"Fetched {len(user_listings)} listings for user with chat_id {chat_id}.")
