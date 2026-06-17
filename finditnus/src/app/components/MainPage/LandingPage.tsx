@@ -27,8 +27,8 @@ export default function LandingPage() {
                 <input
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className='flex-1 rounded-xl border shadow-sm py-4 pl-2 text-sm'
-                placeholder='Search for items, categories or locations'
+                className='flex-1 rounded-xl border shadow-sm py-2.5 pl-2 text-sm'
+                placeholder='Search for recently listed items'
                 >
                 </input>
                 <Search className='absolute right-4 top-1/2 -translate-y-1/2 size-5'/>
