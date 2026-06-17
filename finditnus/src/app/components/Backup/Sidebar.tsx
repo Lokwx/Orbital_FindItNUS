@@ -10,8 +10,8 @@ import * as Headless from '@headlessui/react';
 
 import { useState } from 'react';
 
-import FilterPanel from '@/app/components/FilterPanel';
-import SideBar from '@/app/components/Sidebar';
+import FilterPanel from '@/app/components/Backup/FilterPanel';
+import SideBar from '@/app/components/Backup/Sidebar';
 
 export default function Sidebar() {
     const [darkMode, setDarkMode] = useState(true);

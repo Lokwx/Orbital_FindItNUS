@@ -1,0 +1,5 @@
+serviceAccountKey.json
+.local_dev
+.env
+
+/finditnus_backend/__pycache__/

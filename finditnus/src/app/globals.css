@@ -10,6 +10,15 @@
     left: 85%;
 }
 
+.leaflet-popup-content {
+  margin: 0;
+}
+
+.leaflet-popup-content-wrapper {
+  padding: 0;
+  overflow: hidden;
+}
+
 body {
   font-family: 'Roboto', sans-serif;
 }
