@@ -7,7 +7,7 @@ import L from 'leaflet';
 
 import { Divider } from '@mui/material'
 
-import { Search, Backpack, Locate, Tag, UserRound, LayoutGrid } from 'lucide-react';
+import { CalendarClock, Locate, Tag, UserRound, LayoutGrid } from 'lucide-react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -150,7 +150,7 @@ export default function Map({location}:MapProps) {
                     >
                         <Popup autoPan={true}>
                             <section className="flex flex-col h-130 w-76 font-sans">
-                                <div className='flex flex-row items-center justify-start gap-4 mx-2'>
+                                <div className='flex flex-row items-center justify-between gap-4 my-2 mx-4'>
                                     <Image
                                     src="https://thesvg.org/icons/google-maps/default.svg"
                                     alt="Google Maps"
@@ -159,26 +159,25 @@ export default function Map({location}:MapProps) {
                                     />      
                                     <div className='flex w-full flex-row items-center justify-between text-start'>
                                         <div>
-                                            <h1 className='text-lg font-semibold'>{itemData.ItemLocation}</h1> 
+                                            <h1 className='text-lg font-semibold text-nowrap'>{itemData.ItemLocation}</h1> 
                                             <h2 className='text-sm text-slate-400'>{itemData.ItemLocationDetail}</h2>
                                         </div>
                                         <div className='flex w-full justify-center gap-1'>
                                             <Locate className='stroke-1 size-4'/>
-                                            {itemData.Latitude?.toPrecision(5)}, {itemData.Longitude?.toPrecision(5)}
+                                            {itemData.Latitude?.toPrecision(4)}, {itemData.Longitude?.toPrecision(4)}
                                         </div>
                                     </div> 
-                                    
                                 </div>
                                 <Divider/> 
                                 {/* Item Image */}
                                 <img 
                                     src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
                                     alt={itemData.ItemName ?? 'Item Image'}
-                                    className='w-full h-40 object-scale-down rounded-md mt-2'
+                                    className='w-full h-40 object-scale-down rounded-md my-0.25'
                                 >
                                 </img>
-                                <section className='flex items-center w-full h-full'>
-                                    <div className='flex flex-col items-start justify-start bg-slate-100/50 w-full h-full m-2 rounded-xl border-2 border-slate-200 shadow-md'>
+                                <section className='flex items-center flex-1 w-full min-h-0'>
+                                    <div className='flex flex-col items-start justify-start bg-slate-100/50 w-full h-full m-2 rounded-xl border-2 border-slate-200 shadow-md overflow-y-auto'>
                                         <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
                                             <div className='bg-slate-200/60 p-2 rounded-full'><Tag className='stroke-1 size-5'/></div>
                                             <div className='flex flex-col'>
@@ -208,7 +207,7 @@ export default function Map({location}:MapProps) {
                                             </div>
                                         </div>
                                         <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><UserRound className='stroke-1 size-5'/></div>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><CalendarClock className='stroke-1 size-5'/></div>
                                             <div className='flex flex-col'>
                                                 <span className='text-xs'>Date & Time Submitted</span>
                                                 <span className='text-md font-bold'>{itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}</span>
@@ -216,7 +215,7 @@ export default function Map({location}:MapProps) {
                                         </div>
                                         <a
                                             href={`https://t.me/${itemData.UserName}`}
-                                            className='flex items-center justify-start self-stretch border-2 border-slate-200 bg-indigo-200/50 rounded-md p-2 my-2 mx-4 gap-2'
+                                            className='flex items-center justify-start self-stretch border-2 border-slate-200 bg-indigo-200/50 rounded-md p-2 my-1 mx-4 gap-2'
                                         >
                                             <FontAwesomeIcon icon={faTelegram} size='xl' className='text-blue-500'/> 
                                             <span className='text-black font-semibold'>Contact @{itemData.UserName}</span>
