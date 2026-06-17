@@ -16,10 +16,10 @@ export default function LandingPage() {
     const [searchInput, setSearchInput] = useState("");
 
     return (
-        <main className="flex flex-col px-5 font-serif bg-slate-200/10 w-screen h-screen">
+        <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen">
             <FindItNUSHeader/>
             <section className=''>
-                <h1 className='text-3xl text-front font-bold'>Stop searching<br/>everywhere.</h1>
+                <h1 className='text-3xl text-front font-serif font-bold'>Stop searching<br/>everywhere.</h1>
                 <Divider className='pt-2'/>
                 <h1 className='text-md py-2 text-slate-400'>See lost and found reports across NUS.</h1>
             </section>

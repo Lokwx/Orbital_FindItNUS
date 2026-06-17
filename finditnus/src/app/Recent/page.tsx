@@ -20,9 +20,9 @@ export default function App() {
     }
 
     return (
-        <main className="flex flex-col px-5 font-serif bg-slate-200/10 w-screen h-screen overflow-x-hidden overflow-y-auto no-scrollbar">
+        <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen overflow-x-hidden overflow-y-auto no-scrollbar">
             <FindItNUSHeaderWithBack returnURL='/'/> 
-            <h1 className='font-serif font-bold text-2xl m-2'>
+            <h1 className='font-bold text-2xl m-2'>
                 Recents
             </h1>
             <Divider/> 

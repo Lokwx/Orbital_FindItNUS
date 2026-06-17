@@ -10,7 +10,7 @@ import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton'
 
 export default function App() {
     return (
-        <main className='mx-auto flex h-screen w-full max-w-[430px] flex-col bg-white overflow-hidden font-serif px-5'>
+        <main className='mx-auto flex h-screen w-full max-w-[430px] flex-col bg-white overflow-hidden font-sans px-5'>
             <FindItNUSHeaderWithBack returnURL='/'/>
             <section className='flex flex-col font-bold text-2xl m-4'>
                 <div className='flex flex-col'>
