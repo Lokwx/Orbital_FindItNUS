@@ -2,13 +2,19 @@
 
 import { useState, useEffect } from 'react';
 
-import 'leaflet/dist/leaflet.css';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
 import { Divider } from '@mui/material'
 
-import { Asterisk } from 'lucide-react';
+import { Search, Backpack, Locate, Tag, UserRound, LayoutGrid } from 'lucide-react';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+    faTelegram
+} from '@fortawesome/free-brands-svg-icons'
+
+import Image from 'next/image';
 
 import { getAllItemData } from '@/Firebase';
 
@@ -45,6 +51,10 @@ type Item = {
     Hour?: number;
     Minute?: number;
     Second?: number;
+
+    imageUrl?: string;
+    cloudinaryPublicID?: string;
+    status?: string;
 };
 
 const NUS_AREA_COORDINATES = {
@@ -102,6 +112,7 @@ type MapProps = {
 
 
 export default function Map({location}:MapProps) {
+    // Initial setup of origin location
     const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : "NUS";
     const originX = NUS_AREA_COORDINATES[area].latitude;
     const originY = NUS_AREA_COORDINATES[area].longitude;
@@ -136,28 +147,82 @@ export default function Map({location}:MapProps) {
                         key={itemData.id}
                         position={itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position}
                         icon={pinIcon}
-                        
                     >
-                        <Popup>
-                            <section className="flex flex-col font-serif items-center">
-                                <div className='flex bg-red-400/50 border border-red-400 font-semibold px-2 rounded-md '>
-                                    Found
+                        <Popup autoPan={true}>
+                            <section className="flex flex-col h-130 w-76 font-sans">
+                                <div className='flex flex-row items-center justify-start gap-4 mx-2'>
+                                    <Image
+                                    src="https://thesvg.org/icons/google-maps/default.svg"
+                                    alt="Google Maps"
+                                    width={20}
+                                    height={20}
+                                    />      
+                                    <div className='flex w-full flex-row items-center justify-between text-start'>
+                                        <div>
+                                            <h1 className='text-lg font-semibold'>{itemData.ItemLocation}</h1> 
+                                            <h2 className='text-sm text-slate-400'>{itemData.ItemLocationDetail}</h2>
+                                        </div>
+                                        <div className='flex w-full justify-center gap-1'>
+                                            <Locate className='stroke-1 size-4'/>
+                                            {itemData.Latitude?.toPrecision(5)}, {itemData.Longitude?.toPrecision(5)}
+                                        </div>
+                                    </div> 
+                                    
                                 </div>
-                                <div className='w-40 h-20 m-2'>
-                                    <img src='https://www.shoshinsha-design.com/wp-content/uploads/2020/05/noimage_%E3%83%92%E3%82%9A%E3%82%AF%E3%83%88-760x460.png'>
-                                    </img>
-                                </div>
-                                <div className='text-center'>
-                                    <h1 className='whitespace-nowrap font-semibold text-lg'>{itemData.ItemName}</h1>
-                                    <span>({itemData.ItemCategory})</span><br/>
-                                    <span className='whitespace-normal items-center'>{itemData.ItemDescription}</span><br/><br></br>
-                                </div>
-                                <div className='text-center'>
-                                     <span className='font-mono'>{itemData.Hour}:{itemData.Minute}:{itemData.Second}</span><br/>
-                                    <span className='font-mono'>{itemData.Day}/{itemData.Month}/{itemData.Year}</span><br/>
-                                    <span className='font-mono'>{itemData.ItemLocation}, {itemData.ItemLocationDetail}</span><br/>
-                                    <span className='font-semibold whitespace-normal mt-2'>By: @{itemData.UserName}</span>
-                                </div>
+                                <Divider/> 
+                                {/* Item Image */}
+                                <img 
+                                    src={itemData.imageUrl}
+                                    alt={itemData.ItemName ?? 'Item Image'}
+                                    className='w-full h-40 object-cover rounded-md mt-2'
+                                >
+                                </img>
+                                <section className='flex items-center w-full h-full'>
+                                    <div className='flex flex-col items-start justify-start bg-slate-100/50 w-full h-full m-2 rounded-xl border-2 border-slate-200 shadow-md'>
+                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><Tag className='stroke-1 size-5'/></div>
+                                            <div className='flex flex-col'>
+                                                <span className='text-xs'>Report Type</span>
+                                                <span className='text-md font-bold'>{itemData.ReportType}</span>
+                                            </div>
+                                        </div>
+                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><LayoutGrid className='stroke-1 size-5'/></div>
+                                            <div className='flex flex-col'>
+                                                <span className='text-xs'>Item Name</span>
+                                                <span className='text-md font-bold'>{itemData.ItemName}</span>
+                                            </div>
+                                        </div>
+                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><LayoutGrid className='stroke-1 size-5'/></div>
+                                            <div className='flex flex-col'>
+                                                <span className='text-xs'>Item Category</span>
+                                                <span className='text-md font-bold'>{itemData.ItemCategory}</span>
+                                            </div>
+                                        </div>
+                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><UserRound className='stroke-1 size-5'/></div>
+                                            <div className='flex flex-col'>
+                                                <span className='text-xs'>Submitted By</span>
+                                                <span className='text-md font-bold'>@{itemData.UserName}</span>
+                                            </div>
+                                        </div>
+                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
+                                            <div className='bg-slate-200/60 p-2 rounded-full'><UserRound className='stroke-1 size-5'/></div>
+                                            <div className='flex flex-col'>
+                                                <span className='text-xs'>Date & Time Submitted</span>
+                                                <span className='text-md font-bold'>{itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}</span>
+                                            </div>
+                                        </div>
+                                        <a
+                                            href={`https://t.me/${itemData.UserName}`}
+                                            className='flex items-center justify-start w-full border border-slate-200 bg-indigo-200/50 rounded-md p-2 m-2 gap-2'
+                                        >
+                                            <FontAwesomeIcon icon={faTelegram} size='xl' className='text-blue-500'/> 
+                                            <span className='text-black text-md'>Contact @{itemData.UserName}</span>
+                                        </a>
+                                    </div>
+                                </section>
                             </section>
                         </Popup>
                     </Marker>

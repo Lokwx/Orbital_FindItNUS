@@ -46,9 +46,9 @@ const getAllItemData = async () => {
 
             ItemLocationInput: itemData.ItemLocationInput,
             ItemLocation: itemData.ItemLocation,
+            ItemLocationDetail: itemData.ItemLocationDetail,
             Latitude: itemData.Latitude,
             Longitude: itemData.Longitude,
-            ItemLocationDetail: itemData.ItemLocationDetail,
 
             UserSubmitTiming: itemData.UserSubmitTiming,
             Year: itemData.Year,
@@ -57,6 +57,10 @@ const getAllItemData = async () => {
             Hour: itemData.Hour,
             Minute: itemData.Minute,
             Second: itemData.Second,
+
+            imageUrl: itemData.imageUrl,
+            cloudinaryPublicID: itemData.cloudinaryPublicID,
+            status: itemData.status,
         };
 
         items.push(item);
