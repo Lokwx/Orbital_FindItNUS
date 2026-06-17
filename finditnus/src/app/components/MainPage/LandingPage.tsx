@@ -86,7 +86,7 @@ export default function LandingPage() {
                 <input
                 value={searchInput}
                 onChange={(event) => setSearchInput(event.target.value)}
-                className='flex-1 rounded-xl border shadow-sm py-2.5 pl-2 text-sm'
+                className='flex-1 rounded-xl border border-slate-400 shadow-sm py-2 pl-2 text-sm'
                 placeholder='Search for recently listed items'
                 >
                 </input>
@@ -99,21 +99,36 @@ export default function LandingPage() {
                 <></> 
                 : 
                 (filterItems.length == 0) ? 
-                <section className='bg-white border border-slate-400 rounded-md'>
-                    <p className='text-sm ml-2.5 py-1'>No results found for {searchInput}</p>
+                <section className='flex min-w-0 bg-white border border-slate-400 rounded-xl'>
+                    <p className='text-sm ml-2.5 py-1 truncate'>No results found for &quot;{searchInput}&quot;</p>
                 </section> 
                 :
-                <section className='bg-white border border-slate-400 rounded-md'>
-                    {filterItems.map((item) => {
+                <section className='flex flex-col min-w-0 bg-white border border-slate-400 rounded-xl'>
+                    {filterItems.map((itemData) => {
                         return (
-                            <div 
-                                key={item.id}
-                                className='flex items-center justify-between'
+                            <section 
+                                key={itemData.id}
+                                className='flex min-w-0 items-center justify-between mx-2 my-1 px-2 shadow-sm rounded-xl'
                             >
-                                <p className='text-sm ml-2.5 py-1'>
-                                    {item.ItemName}
-                                </p>
-                            </div>
+                                <div className='flex min-w-0 items-center justify-center gap-2'>
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.4" stroke="currentColor" className="size-6 shrink-0">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                                    </svg>
+                                    <div className='flex flex-1 min-w-0 flex-col'>
+                                        <h1 className='font-semibold text-sm truncate'>{itemData.ItemName}</h1>
+                                        <h2 className='font-semibold text-sm truncate'>{itemData.ItemLocation}, {itemData.ItemLocationDetail}</h2>
+                                        <h3 className='text-sm text-slate-400 truncate'>{itemData.ItemDescription}</h3>
+                                    </div>
+                                </div>
+                                <Link
+                                    href='#'
+                                    className='px-2 py-4'
+                                >
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+                                    </svg>
+                                </Link>
+                            </section>
                         );
                     })}
                 </section> 
