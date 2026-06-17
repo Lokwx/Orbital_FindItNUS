@@ -8,8 +8,11 @@ const Map = dynamic(() => import('./Map'), {
 
 type ClientMapProps = {
     location: string;
+    id?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
-export default function ClientMap({location}:ClientMapProps) {
-    return <Map location={location}/>;
+export default function ClientMap({location, id, latitude, longitude}:ClientMapProps) {
+    return <Map location={location} id={id} latitude={latitude} longitude={longitude}/>;
 }

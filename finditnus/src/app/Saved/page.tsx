@@ -13,6 +13,12 @@ import ClientMap from '../components/Map/ClientMap';
 function SavedPageContent() {
     const location = useSearchParams().get("location") ?? "NUS";
     const returnURL = useSearchParams().get("returnURL") ?? "/";
+    const id = useSearchParams().get("id") ?? undefined;
+
+    const lat = useSearchParams().get("latitude");
+    const lng = useSearchParams().get("longitude");
+    const latitude = lat != null ? Number(lat) : undefined;
+    const longitude = lng != null ? Number(lng) : undefined;
 
     // Location Filters
     const [today, setToday] = useState(false);
@@ -216,7 +222,7 @@ function SavedPageContent() {
                 </div>
             </section>
             <section className='flex flex-1 items-center justify-center m-2'>
-                <ClientMap location={location}/>
+                <ClientMap location={location} id={id} latitude={latitude} longitude={longitude}/>
             </section>
         </main>
     )

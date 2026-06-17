@@ -19,7 +19,25 @@ import Image from 'next/image';
 import { getAllItemData } from '@/Firebase';
 
 const pinIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="red" class="size-6">
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="#ff0a0a" class="size-6">
+            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+            </svg>`,
+    iconSize: [36, 36],
+    popupAnchor: [-6, -8],
+    className: '',
+});
+
+const selectedIcon = L.divIcon({
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="#ff0a0a" class="size-6">
+            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+            </svg>`,
+    iconSize: [36, 36],
+    popupAnchor: [-6, -8],
+    className: '',
+});
+
+const nonSelectedIcon = L.divIcon({
+    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="none" class="size-0">
             <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
             </svg>`,
     iconSize: [36, 36],
@@ -108,15 +126,18 @@ type NusArea = keyof typeof NUS_AREA_COORDINATES
 
 type MapProps = {
     location: string;
+    id?: string;
+    latitude?: number;
+    longitude?: number;
 }
 
 
-export default function Map({location}:MapProps) {
+export default function Map({location, id, latitude, longitude}:MapProps) {
     // Initial setup of origin location
     const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : "NUS";
     const originX = NUS_AREA_COORDINATES[area].latitude;
     const originY = NUS_AREA_COORDINATES[area].longitude;
-    const position: [number, number] = [originX, originY];
+    const position:[number,number] = (id != null && latitude != null && longitude != null) ? [latitude,longitude] : [originX, originY]
 
     const [items, setItems] = useState<Item[]>([]);
 
@@ -146,7 +167,7 @@ export default function Map({location}:MapProps) {
                     <Marker
                         key={itemData.id}
                         position={itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position}
-                        icon={pinIcon}
+                        icon = {(id == null) ? pinIcon : (id == itemData.id) ? selectedIcon : nonSelectedIcon}
                     >
                         <Popup autoPan={true}>
                             <section className="flex flex-col h-130 w-76 font-sans">
