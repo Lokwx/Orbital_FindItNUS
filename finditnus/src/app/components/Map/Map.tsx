@@ -172,9 +172,9 @@ export default function Map({location}:MapProps) {
                                 <Divider/> 
                                 {/* Item Image */}
                                 <img 
-                                    src={itemData.imageUrl}
+                                    src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
                                     alt={itemData.ItemName ?? 'Item Image'}
-                                    className='w-full h-40 object-cover rounded-md mt-2'
+                                    className='w-full h-40 object-scale-down rounded-md mt-2'
                                 >
                                 </img>
                                 <section className='flex items-center w-full h-full'>
