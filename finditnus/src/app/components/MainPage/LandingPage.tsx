@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 import { Divider } from '@mui/material'
 import { Search, Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPin } from 'lucide-react'
@@ -12,8 +12,67 @@ import FindItNUSHeader from '@/app/components/Header/FindItNUSHeader'
 import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton';
 import ButtonToMap from '@/app/components/Map/ButtonToMap'
 
+import { getRecentItemData } from '@/Firebase';
+
+const RECENT_QUERIES = 10;
+
+type Item = {
+    id?: string;
+
+    UserID?: number;
+    UserName?: string;
+
+    ReportType?: string;
+    ItemName?: string;
+    ItemCategory?: string;
+    ItemDescription?: string;
+
+    ItemLocationInput?: string;
+    ItemLocation?: string;
+    Latitude?: number;
+    Longitude?: number;
+    ItemLocationDetail?: string;
+
+    UserSubmitTiming?: unknown;
+    Year?: number;
+    Month?: number;
+    Day?: number;
+    Hour?: number;
+    Minute?: number;
+    Second?: number;
+
+    imageUrl?: string;
+    cloudinaryPublicID?: string;
+    status?: string;
+};
+
 export default function LandingPage() {
     const [searchInput, setSearchInput] = useState("");
+
+    const [itemData, setItems] = useState<Item[]>([]);
+
+    useEffect(() => {
+        const loadRecentItems = async () => {
+            const recentItems = await getRecentItemData(RECENT_QUERIES);
+            setItems(recentItems)
+        }
+        loadRecentItems();
+    }, []);
+
+    const filterItems = itemData.filter((item) => {
+        const search = searchInput.toLowerCase().trim();
+
+        if (search == "") return false;
+
+        return (
+            item.ItemName?.toLowerCase().includes(search) ||
+            item.ItemCategory?.toLowerCase().includes(search) ||
+            item.ItemDescription?.toLowerCase().includes(search) ||
+            item.ItemLocation?.toLowerCase().includes(search) ||
+            item.ItemLocationDetail?.toLowerCase().includes(search)
+        );
+    });
+  
 
     return (
         <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen">
@@ -33,6 +92,33 @@ export default function LandingPage() {
                 </input>
                 <Search className='absolute right-4 top-1/2 -translate-y-1/2 size-5'/>
             </section>
+
+            {/* Search DropDown */}
+            {
+                (searchInput == "" && filterItems.length == 0) ? 
+                <></> 
+                : 
+                (filterItems.length == 0) ? 
+                <section className='bg-white border border-slate-400 rounded-md'>
+                    <p className='text-sm ml-2.5 py-1'>No results found for {searchInput}</p>
+                </section> 
+                :
+                <section className='bg-white border border-slate-400 rounded-md'>
+                    {filterItems.map((item) => {
+                        return (
+                            <div 
+                                key={item.id}
+                                className='flex items-center justify-between'
+                            >
+                                <p className='text-sm ml-2.5 py-1'>
+                                    {item.ItemName}
+                                </p>
+                            </div>
+                        );
+                    })}
+                </section> 
+            }
+
             <section>
                 <ButtonToMap/>
             </section>
