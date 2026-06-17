@@ -216,10 +216,10 @@ export default function Map({location}:MapProps) {
                                         </div>
                                         <a
                                             href={`https://t.me/${itemData.UserName}`}
-                                            className='flex items-center justify-start w-full border border-slate-200 bg-indigo-200/50 rounded-md p-2 m-2 gap-2'
+                                            className='flex items-center justify-start self-stretch border-2 border-slate-200 bg-indigo-200/50 rounded-md p-2 my-2 mx-4 gap-2'
                                         >
                                             <FontAwesomeIcon icon={faTelegram} size='xl' className='text-blue-500'/> 
-                                            <span className='text-black text-md'>Contact @{itemData.UserName}</span>
+                                            <span className='text-black font-semibold'>Contact @{itemData.UserName}</span>
                                         </a>
                                     </div>
                                 </section>
