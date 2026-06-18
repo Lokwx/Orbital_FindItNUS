@@ -5,14 +5,12 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 
-import { Divider } from '@mui/material'
+import { Divider } from '@mui/material';
 
-import { CalendarClock, Locate, Tag, UserRound, LayoutGrid } from 'lucide-react';
+import { CalendarClock, Locate, Tag, UserRound, LayoutGrid, CircleCheck, CircleX, CircleQuestionMark, Folder, CalendarClockIcon } from 'lucide-react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-    faTelegram
-} from '@fortawesome/free-brands-svg-icons'
+import { faTelegram } from '@fortawesome/free-brands-svg-icons';
 
 import Image from 'next/image';
 
@@ -76,68 +74,67 @@ type Item = {
 };
 
 const NUS_AREA_COORDINATES = {
-    "UTown": {
-        "latitude": 1.3059176154741567,
-        "longitude": 103.7728946675182,
+    UTown: {
+        latitude: 1.3059176154741567,
+        longitude: 103.7728946675182,
     },
-    "Central Library": {
-        "latitude": 1.2966294465706647,
-        "longitude": 103.77299429635536,
+    'Central Library': {
+        latitude: 1.2966294465706647,
+        longitude: 103.77299429635536,
     },
-    "Engineering": {
-        "latitude": 1.3003535990313602,
-        "longitude": 103.77077734424164,
+    Engineering: {
+        latitude: 1.3003535990313602,
+        longitude: 103.77077734424164,
     },
-    "Computing": {
-        "latitude": 1.2949570151935264,
-        "longitude": 103.77399521961179,
+    Computing: {
+        latitude: 1.2949570151935264,
+        longitude: 103.77399521961179,
     },
-    "Science": {
-        "latitude": 1.29651282268807,
-        "longitude": 103.78035618844802,
+    Science: {
+        latitude: 1.29651282268807,
+        longitude: 103.78035618844802,
     },
-    "Business": {
-        "latitude": 1.293229761537869,
-        "longitude": 103.77401767566921,
+    Business: {
+        latitude: 1.293229761537869,
+        longitude: 103.77401767566921,
     },
-    "Arts": {
-        "latitude": 1.2948536689943728,
-        "longitude": 103.77156813101674,
+    Arts: {
+        latitude: 1.2948536689943728,
+        longitude: 103.77156813101674,
     },
-    "Medicine": {
-        "latitude": 1.2965302639504568,
-        "longitude": 103.78179213868317,
+    Medicine: {
+        latitude: 1.2965302639504568,
+        longitude: 103.78179213868317,
     },
-    "UHC": {
-        "latitude": 1.299360824558925,
-        "longitude": 103.77635558101099,
+    UHC: {
+        latitude: 1.299360824558925,
+        longitude: 103.77635558101099,
     },
-    "USC": {
-        "latitude": 1.2999118637462117,
-        "longitude": 103.77551105402769,
+    USC: {
+        latitude: 1.2999118637462117,
+        longitude: 103.77551105402769,
     },
-    "NUS": {
-        "latitude": 1.2975810637778415,
-        "longitude": 103.77788569888554,
-    }
-}
+    NUS: {
+        latitude: 1.2975810637778415,
+        longitude: 103.77788569888554,
+    },
+};
 
-type NusArea = keyof typeof NUS_AREA_COORDINATES
+type NusArea = keyof typeof NUS_AREA_COORDINATES;
 
 type MapProps = {
     location: string;
     id?: string;
     latitude?: number;
     longitude?: number;
-}
+};
 
-
-export default function Map({location, id, latitude, longitude}:MapProps) {
+export default function Map({ location, id, latitude, longitude }: MapProps) {
     // Initial setup of origin location
-    const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : "NUS";
+    const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : 'NUS';
     const originX = NUS_AREA_COORDINATES[area].latitude;
     const originY = NUS_AREA_COORDINATES[area].longitude;
-    const position:[number,number] = (id != null && latitude != null && longitude != null) ? [latitude,longitude] : [originX, originY]
+    const position: [number, number] = id != null && latitude != null && longitude != null ? [latitude, longitude] : [originX, originY];
 
     const [items, setItems] = useState<Item[]>([]);
 
@@ -167,81 +164,97 @@ export default function Map({location, id, latitude, longitude}:MapProps) {
                     <Marker
                         key={itemData.id}
                         position={itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position}
-                        icon = {(id == null) ? pinIcon : (id == itemData.id) ? selectedIcon : nonSelectedIcon}
+                        icon={id == null ? pinIcon : id == itemData.id ? selectedIcon : nonSelectedIcon}
                     >
                         <Popup autoPan={true}>
                             <section className="flex flex-col h-130 w-76 font-sans">
-                                <div className='flex flex-row items-center justify-between gap-4 my-2 mx-4'>
-                                    <Image
-                                    src="https://thesvg.org/icons/google-maps/default.svg"
-                                    alt="Google Maps"
-                                    width={20}
-                                    height={20}
-                                    />      
-                                    <div className='flex w-full flex-row items-center justify-between text-start'>
-                                        <div>
-                                            <h1 className='text-lg font-semibold text-nowrap'>{itemData.ItemLocation}</h1> 
-                                            <h2 className='text-sm text-slate-400'>{itemData.ItemLocationDetail}</h2>
+                                <div className="flex w-full items-center border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
+                                    <div className="flex w-full min-w-0 flex-row items-center gap-4">
+                                        <Image
+                                            src="https://thesvg.org/icons/google-maps/default.svg"
+                                            alt="Google Maps"
+                                            width={20}
+                                            height={20}
+                                            className="shrink-0"
+                                        />
+                                        <div className="flex min-w-0 flex-1 flex-row items-center text-start gap-4">
+                                            <div className='flex min-w-0 flex-1 flex-col'>
+                                                <h1 className="truncate text-lg font-semibold">{itemData.ItemLocation}</h1>
+                                                <h2 className="truncate text-sm text-blue-600">{itemData.ItemLocationDetail}</h2>
+                                            </div>
+                                            <div className="mr-6 shrink-0">
+                                                {itemData.ReportType == 'found' ? 
+                                                    <div className='inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700'>
+                                                        <CircleCheck className="size-4 fill-emerald-600 text-emerald-600 stroke-white" />
+                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                    </div>
+                                                    :
+                                                    itemData.ReportType == 'lost' ?
+                                                    <div className='inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-2 text-red-700'>
+                                                        <CircleX className="size-4 fill-red-600 text-red-600 stroke-white" />
+                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                    </div>
+                                                    : 
+                                                    <div className='inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700'>
+                                                        <CircleQuestionMark className="size-4 fill-amber-600 text-amber-600 stroke-white" />
+                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                    </div>
+                                                }
+                                            </div>
+                           
                                         </div>
-                                        <div className='flex w-full justify-center gap-1'>
-                                            <Locate className='stroke-1 size-4'/>
-                                            {itemData.Latitude?.toPrecision(4)}, {itemData.Longitude?.toPrecision(4)}
-                                        </div>
-                                    </div> 
+                                    </div>
                                 </div>
-                                <Divider/> 
-                                {/* Item Image */}
-                                <img 
+                                
+                                <span className='flex flex-col pl-4 justify-center items-start mt-2 mx-2'>
+                                    <h1 className='text-xl font-bold'>{itemData.ItemName}</h1>
+                                    <h2 className='line-clamp-2 text-slate-600'>{itemData.ItemDescription}</h2>
+                                </span>
+                                <img
                                     src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
                                     alt={itemData.ItemName ?? 'Item Image'}
-                                    className='w-full h-40 object-scale-down rounded-md my-0.25'
-                                >
-                                </img>
-                                <section className='flex items-center flex-1 w-full min-h-0'>
-                                    <div className='flex flex-col items-start justify-start bg-slate-100/50 w-full h-full m-2 rounded-xl border-2 border-slate-200 shadow-md overflow-y-auto'>
-                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><Tag className='stroke-1 size-5'/></div>
-                                            <div className='flex flex-col'>
-                                                <span className='text-xs'>Report Type</span>
-                                                <span className='text-md font-bold'>{itemData.ReportType}</span>
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><LayoutGrid className='stroke-1 size-5'/></div>
-                                            <div className='flex flex-col'>
-                                                <span className='text-xs'>Item Name</span>
-                                                <span className='text-md font-bold'>{itemData.ItemName}</span>
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><LayoutGrid className='stroke-1 size-5'/></div>
-                                            <div className='flex flex-col'>
-                                                <span className='text-xs'>Item Category</span>
-                                                <span className='text-md font-bold'>{itemData.ItemCategory}</span>
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><UserRound className='stroke-1 size-5'/></div>
-                                            <div className='flex flex-col'>
-                                                <span className='text-xs'>Submitted By</span>
-                                                <span className='text-md font-bold'>@{itemData.UserName}</span>
-                                            </div>
-                                        </div>
-                                        <div className='flex flex-row items-center mx-2 mt-1 p-1 gap-2'>
-                                            <div className='bg-slate-200/60 p-2 rounded-full'><CalendarClock className='stroke-1 size-5'/></div>
-                                            <div className='flex flex-col'>
-                                                <span className='text-xs'>Date & Time Submitted</span>
-                                                <span className='text-md font-bold'>{itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}</span>
-                                            </div>
-                                        </div>
-                                        <a
-                                            href={`https://t.me/${itemData.UserName}`}
-                                            className='flex items-center justify-start self-stretch border-2 border-slate-200 bg-indigo-200/50 rounded-md p-2 my-1 mx-4 gap-2'
-                                        >
-                                            <FontAwesomeIcon icon={faTelegram} size='xl' className='text-blue-500'/> 
-                                            <span className='text-black font-semibold'>Contact @{itemData.UserName}</span>
-                                        </a>
+                                    className="w-full h-40 object-scale-down rounded-md mt-2"
+                                ></img>
+                                <div className='my-2'><Divider/></div>
+                                <section className='flex items-center justify-start'>
+                                    <div className='rounded-full my-2 mx-4 p-1.5 bg-amber-100 border border-amber-200'>
+                                        <Folder className='fill-amber-200'/>
                                     </div>
+                                    <div>
+                                        <h1 className='text-xs text-slate-500'>Category</h1>
+                                        <h2 className='font-semibold font-sm'>{itemData.ItemCategory}</h2>
+                                    </div>
+                                </section>
+                                <section className='flex items-center justify-start'>
+                                    <div className='rounded-full my-2 mx-4 p-1.5 bg-sky-100 border border-sky-200'>
+                                        <UserRound className='fill-blue-100 stroke-blue-600'/>
+                                    </div>
+                                    <div>
+                                        <h1 className='text-xs text-slate-500'>Submitted By</h1>
+                                        <h2 className='font-semibold font-sm'>@{itemData.UserName}</h2>
+                                    </div>
+                                </section>
+                                <section className='flex items-center justify-start'>
+                                    <div className='rounded-full my-2 mx-4 p-1.5 bg-mist-100 border border-mist-200'>
+                                        <CalendarClock/>
+                                    </div>
+                                    <div>
+                                        <h1 className='text-xs text-slate-500'>Reported At</h1>
+                                        <h2 className='font-semibold font-sm'>{itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}</h2>
+                                    </div>
+                                </section>
+                                <section>
+                                    <a
+                                        href={`https://t.me/${itemData.UserName}`}
+                                        className="flex items-center justify-center self-stretch border-2 border-sky-200 bg-sky-100 rounded-xl shadow-md p-2 my-1 mx-4 gap-2"
+                                    >
+                                        <FontAwesomeIcon
+                                            icon={faTelegram}
+                                            size="xl"
+                                            className="text-blue-500 shrink-0"
+                                        />
+                                        <span className="truncate text-blue-500"><span className='text-sky-900'>Contact</span> @{itemData.UserName}</span>
+                                    </a>
                                 </section>
                             </section>
                         </Popup>
