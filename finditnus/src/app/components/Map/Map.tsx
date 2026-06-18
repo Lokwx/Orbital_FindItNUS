@@ -208,7 +208,7 @@ export default function Map({ location, id, latitude, longitude }: MapProps) {
                                 
                                 <span className='flex flex-col pl-4 justify-center items-start mt-2 mx-2'>
                                     <h1 className='text-xl font-bold'>{itemData.ItemName}</h1>
-                                    <h2>{itemData.ItemDescription}</h2>
+                                    <h2 className='line-clamp-2 text-slate-600'>{itemData.ItemDescription}</h2>
                                 </span>
                                 <img
                                     src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
