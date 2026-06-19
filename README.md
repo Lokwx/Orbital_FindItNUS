@@ -41,7 +41,7 @@
 ## Problem Motivation
 Lost & found management within campus is traditionally fragmented across informal, unstructured Telegram channels. While these platforms provide a quick way to disseminate information, uploaded posts are often unstructured. Crucial metadata, such as the exact date, time, and precise geographical location of the item is often missing or ambiguous. 
 Furthermore, listings are also not consistently updated after items have been returned to their owners, resulting in outdated or redundant postings. Consequently, users may need to spend significant time manually filtering through irrelevant posts when searching for their belongings.
-A more organised and visually intuitive digital platform could improve how lost-and-found information is reported, searched and managed within the NUS community.
+A more organised and visually intuitive digital platform could improve how lost & found information is reported, searched and managed within the NUS community.
 
 ---
 
