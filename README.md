@@ -57,7 +57,7 @@ FindItNUS is an all-in-one lost & found application designed specifically for th
 
 We aim to bridge this gap by designing a unified, dual-interface platform.
 1. A structured **Telegram Bot Interface** that standardizes item reporting right at the point of discovery.
-2. An interactive **Find-My Style Web Interface** that maps reported items as precise spatial coordinate markers on top of the campus layout.
+2. An interactive **Find-My Style Web Interface** that maps reported items as precise coordinate pins on top of the campus layout map, showing visual preview cards of corresponding lost items.
 
 FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable.
 
