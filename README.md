@@ -25,6 +25,7 @@
   * [Feature 4: End-to-End Image Processing Pipeline](#feature-4-end-to-end-image-processing-pipeline)
   * [Feature 5: Live Visual Web Map & Gallery Dashboard](#feature-5-live-visual-web-map--gallery-dashboard)
   * [Feature 6: Intelligent "Lost Ticket" Matchmaking Engine](#feature-6-intelligent-lost-ticket-matchmaking-engine)
+  * [Feature 7: Automated Map Cleanup (14-day TTL)](#feature-7-automated-map-cleanup-14-day-ttl)
 * [Tech Stack](#tech-stack)
 * [System Architecture](#system-architecture)
 * [Planning & Version Control](#planning-version-control)
