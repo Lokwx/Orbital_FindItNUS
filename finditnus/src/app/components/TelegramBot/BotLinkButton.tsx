@@ -7,14 +7,14 @@ export default function BotLinkButton() {
     return (
         <Link
             href='https://t.me/nusfindit_bot'
-            className="gap-2 flex flex-1 text-center font-semibold items-center justify-center bg-indigo-400/30 rounded-xl py-2 shadow-md border border-indigo-200"
+            className="gap-2 flex flex-1 text-center items-center justify-center bg-indigo-100 rounded-xl py-2 shadow-md border border-indigo-200"
         >
             <FontAwesomeIcon
                 icon={faTelegram}
                 size="xl"
                 className="text-blue-500"
             />
-            <h1>FindItNUS Telegram Bot</h1>
+            <h1 className='font-semibold tracking-wide'>FindItNUS Telegram Bot</h1>            
         </Link>
     );
 }
