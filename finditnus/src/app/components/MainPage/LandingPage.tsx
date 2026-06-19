@@ -85,6 +85,7 @@ export default function LandingPage() {
                     className="w-full rounded-xl border border-slate-400 shadow-sm py-2 pl-2 text-sm tracking-tight text-slate-900 "
                     placeholder="Search for recently listed items 🔎"
                 ></input>
+
                 {/* Search DropDown */}
                 {searchInput == '' && filterItems.length == 0 ? (
                     <></>
@@ -106,7 +107,7 @@ export default function LandingPage() {
                             return (
                                 <section
                                     key={itemData.id}
-                                    className="flex w-full min-w-0 items-center"
+                                    className="flex w-full min-w-0 items-center overflow-y-auto pr-1"
                                 >
                                     <div className="flex items-center justify-between">
                                         {itemData.ReportType == 'lost' ? (
