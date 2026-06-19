@@ -35,7 +35,7 @@ export default function FindItNUSHeader({ returnURL }: PropType) {
                 />
                 <h1 className="pl-4 text-xl font-bold">FinditNUS</h1>
             </section>
-            <section className="flex flex-row items-center justify-center gap-2">
+            {/* <section className="flex flex-row items-center justify-center gap-2">
                 <button
                     type="button"
                     className="flex size-8 rounded-full bg-slate-100/10 z-0 border border-slate-200 shadow-md items-center justify-center"   
@@ -49,7 +49,7 @@ export default function FindItNUSHeader({ returnURL }: PropType) {
                         <User className="z-10"/>
                     </div>
                 </Link>
-            </section>
+            </section> */}
         </header>
     );
 }

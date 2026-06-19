@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default function FindItNUSHeader() {
     return (
-        <header className="relative flex flex-row items-center justify-between py-5 z-10">
+        <header className="relative flex flex-row items-center justify-center py-5 z-10">
             <section className="relative flex flex-row items-center justify-center">
                 <div className="absolute -left-1 size-10 rounded-2xl bg-orange-300/40 shadow-md z-0"></div>
                 <img
@@ -14,7 +14,7 @@ export default function FindItNUSHeader() {
                 />
                 <h1 className="pl-4 text-xl font-bold">FinditNUS</h1>
             </section>
-            <section className="flex flex-row items-center justify-center gap-2">
+            {/* <section className="flex flex-row items-center justify-center gap-2">
                 <button
                     type="button"
                     className="flex size-8 rounded-full bg-slate-100/10 z-0 border border-slate-200 shadow-md items-center justify-center"   
@@ -28,7 +28,7 @@ export default function FindItNUSHeader() {
                         <User className="z-10"/>
                     </div>
                 </Link>
-            </section>
+            </section> */}
         </header>
     );
 }

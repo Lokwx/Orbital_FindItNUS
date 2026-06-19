@@ -82,7 +82,7 @@ export default function LandingPage() {
     return (
         <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen">
             <FindItNUSHeader />
-            <section className="">
+            <section className="text-center">
                 <h1 className="text-4xl text-front font-serif font-bold tracking-tight">
                     Stop searching
                     <br />
