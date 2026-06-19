@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { Divider } from '@mui/material';
-import { Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPinCheck, MapPinX, MapPinSearch } from 'lucide-react';
+import { Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPinCheck, MapPinX, MapPinSearch, MapPin } from 'lucide-react';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -67,6 +67,16 @@ export default function LandingPage() {
         return item.ItemName?.toLowerCase().includes(search) || item.ItemCategory?.toLowerCase().includes(search) || item.ItemDescription?.toLowerCase().includes(search) || item.ItemLocation?.toLowerCase().includes(search) || item.ItemLocationDetail?.toLowerCase().includes(search);
     });
 
+    const LocationItems = (param: string) => {
+        const search = param.toLowerCase().trim();
+        
+        return itemData.filter((item) => {
+            return (
+                item.ItemLocation?.toLowerCase().includes(search)
+            );
+        });
+    };
+
     return (
         <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen">
             <FindItNUSHeader />
@@ -126,15 +136,11 @@ export default function LandingPage() {
                                     </div>
                                     <div className="flex min-w-0 flex-1 flex-col items-start justify-center mx-1 my-1">
                                         <div className="flex flex-col w-full min-w-0 justify-between items-start">
-                                            <h1 className="w-full truncate font-semibold tracking-tight">
-                                                {itemData.ItemName}
-                                            </h1>
+                                            <h1 className="w-full truncate font-semibold tracking-tight">{itemData.ItemName}</h1>
                                             <h2 className="w-full truncate text-[14px] text-slate-800 tracking-tight">
                                                 {itemData.ItemLocation}, {itemData.ItemLocationDetail}
                                             </h2>
-                                            <h3 className='w-full truncate text-[12px] text-slate-600 line-clamp-1'>
-                                                {itemData.ItemDescription}
-                                            </h3>
+                                            <h3 className="w-full truncate text-[12px] text-slate-600 line-clamp-1">{itemData.ItemDescription}</h3>
                                         </div>
                                     </div>
                                     <div className="flex items-center">
@@ -182,14 +188,14 @@ export default function LandingPage() {
             <section>
                 <ButtonToMap />
             </section>
-            <Divider className="py-2" />
-            <section className="py-1 flex flex-col gap-2 justify-center">
+            <Divider className="pt-2" />
+            <section className="pt-1 flex flex-col gap-2 justify-center">
                 <div className="flex justify-between items-center">
                     <div className="flex">
-                        <Bookmark className="text-indigo-500" />
-                        <h1 className="pl-2 text-front font-semibold">SAVED</h1>
+                        <MapPin className="text-indigo-500" />
+                        <h1 className="pl-1 text-front font-semibold tracking-tight">LOCATIONS</h1>
                     </div>
-                    <div className="font-semibold text-indigo-500 px-2 py-2">
+                    <div className="font-semibold text-indigo-500 px-2 pt-2 tracking-tight">
                         <Link
                             href="/Saved/ViewAll"
                             className="px-2 py-2"
@@ -198,36 +204,78 @@ export default function LandingPage() {
                         </Link>
                     </div>
                 </div>
-                <div className="gap-2 flex">
+                <div className="grid grid-cols-2 gap-2">
                     <Link
                         href="/Saved?location=Computing"
-                        className="flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md"
+                        className="flex items-center justify-between px-2 border border-slate-400 p-2 rounded-xl"
                     >
-                        <Laptop />
-                        Computing
+                        <div className="flex gap-2">
+                            <Laptop className='fill-slate-200 text-slate-800'/>
+                            <p className="font-semibold tracking-tight">Computing</p>
+                        </div>
+                        {LocationItems('Computing').length == 0 ? (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-red-100 border border-red-400 shadow-md">
+                                <h1 className="text-xs text-red-800">{LocationItems('Computing').length}</h1>
+                            </div>
+                        ) : (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-emerald-100 border border-emerald-400 shadow-md">
+                                <h1 className="text-xs text-emerald-800">{LocationItems('Computing').length}</h1>
+                            </div>
+                        )}
                     </Link>
                     <Link
                         href="/Saved?location=Business"
-                        className="flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md"
+                        className="flex items-center justify-between px-2 border border-slate-400 p-2 rounded-xl"
                     >
-                        <CircleDollarSign />
-                        Business
+                        <div className="flex gap-2">
+                            <CircleDollarSign className='fill-yellow-300 text-slate-800'/>
+                            <p className="font-semibold tracking-tight">Business</p>
+                        </div>
+                        {LocationItems('Business').length == 0 ? (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-red-100 border border-red-400 shadow-md">
+                                <h1 className="text-xs text-red-800">{LocationItems('Business').length}</h1>
+                            </div>
+                        ) : (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-emerald-100 border border-emerald-400 shadow-md">
+                                <h1 className="text-xs text-emerald-800">{LocationItems('Business').length}</h1>
+                            </div>
+                        )}
                     </Link>
-                </div>
-                <div className="gap-2 flex">
                     <Link
                         href="/Saved?location=Science"
-                        className="flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md"
+                        className="flex items-center justify-between px-2 border border-slate-400 p-2 rounded-xl"
                     >
-                        <Atom />
-                        Science
+                        <div className="flex gap-2">
+                            <Atom className='text-sky-600'/>
+                            <p className="font-semibold tracking-tight">Science</p>
+                        </div>
+                        {LocationItems('Science').length == 0 ? (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-red-100 border border-red-400 shadow-md">
+                                <h1 className="text-xs text-red-800">{LocationItems('Science').length}</h1>
+                            </div>
+                        ) : (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-emerald-100 border border-emerald-400 shadow-md">
+                                <h1 className="text-xs text-emerald-800">{LocationItems('Science').length}</h1>
+                            </div>
+                        )}
                     </Link>
                     <Link
                         href="/Saved?location=Engineering"
-                        className="flex flex-1 gap-2 px-4 py-2 border border-slate-400 bg-white rounded-2xl shadow-md"
+                        className="flex items-center justify-between px-2 border border-slate-400 p-2 rounded-xl"
                     >
-                        <CircuitBoard />
-                        Engineering
+                        <div className="flex gap-2">
+                            <CircuitBoard className='text-olive-600 fill-emerald-300'/>
+                            <p className="font-semibold tracking-tight">Engineering</p>
+                        </div>
+                        {LocationItems('Engineering').length == 0 ? (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-red-100 border border-red-400 shadow-md">
+                                <h1 className="text-xs text-red-800">{LocationItems('Engineering').length}</h1>
+                            </div>
+                        ) : (
+                            <div className="px-2 py-0.5 mx-1 rounded-full bg-emerald-100 border border-emerald-400 shadow-md">
+                                <h1 className="text-xs text-emerald-800">{LocationItems('Engineering').length}</h1>
+                            </div>
+                        )}
                     </Link>
                 </div>
             </section>
