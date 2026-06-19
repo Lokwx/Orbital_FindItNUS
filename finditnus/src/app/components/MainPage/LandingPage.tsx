@@ -193,11 +193,11 @@ export default function LandingPage() {
             <Divider className="pt-2" />
             <section className="pt-1 flex flex-col gap-2 justify-center">
                 <div className="flex justify-between items-center">
-                    <div className="flex">
+                    <div className="flex py-1">
                         <MapPin className="text-indigo-500" />
                         <h1 className="pl-1 text-front font-semibold tracking-tight">LOCATIONS</h1>
                     </div>
-                    <div className="font-semibold text-indigo-500 px-2 pt-2 tracking-tight">
+                    <div className="font-semibold text-indigo-500 px-2 py-1 tracking-tight">
                         <Link
                             href="/Saved/ViewAll"
                             className="px-2 py-2"
@@ -324,14 +324,14 @@ export default function LandingPage() {
                         <History className="text-indigo-500" />
                         <h1 className="pl-2 text-front font-semibold tracking-tight">RECENT LISTINGS</h1>
                     </div>
-                    <div className="font-semibold text-indigo-500 px-2 pt-2">
+                    {/* <div className="font-semibold text-indigo-500 px-2 pt-2">
                         <Link
                             href="/Recent"
                             className="px-2 tracking-tight"
                         >
                             VIEW ALL
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
             </section>
             <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm my-2">
