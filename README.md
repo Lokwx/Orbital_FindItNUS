@@ -7,7 +7,7 @@
 
 * **Team ID: 6807** 
 * **Level of Achievement:** Gemini
-* **Team Mmebers:** Gavin & Wei Xiong
+* **Team Members:** Gavin & Wei Xiong
 * **Milestone:** 2
 * **Deployment:** finditnus.vercel.app
 
@@ -25,7 +25,12 @@
   * [Feature 4: End-to-End Image Processing Pipeline](#feature-4-end-to-end-image-processing-pipeline)
   * [Feature 5: Live Visual Web Map & Gallery Dashboard](#feature-5-live-visual-web-map--gallery-dashboard)
   * [Feature 6: Intelligent "Lost Ticket" Matchmaking Engine](#feature-6-intelligent-lost-ticket-matchmaking-engine)
+* [Tech Stack](#tech-stack)
 * [System Architecture](#system-architecture)
+* [Planning & Version Control](#planning-version-control)
+* [Technical Proof of Concept](#technical-proof-of-concept)
+* [Testing](#testing)
+* [Development Plan](#development-plan)
 * [Frontend Application](#frontend-application)
 * [Backend Application](#backend-application)
 * [Database](#database)
@@ -61,7 +66,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **The Searcher**: As a user who has lost an item, I want to visually browse interactive map listings so I can quickly check if anything was reported near the locations I visited today.
 * **The Witness**: As a student rushing to a class who spots an item, I want to quickly report it as Spotted via the Telegram Bot to alert the community, without being forced to keep it in my possession.
 * **The Reclaimer**: As a finder who created the listing, I want to use the Telegram Bot to toggle the item's state to reclaimed or delete it completely so it instantly disappears from the map layout.
-* **The Suscriber**: As a user who lost an item, I want to register a subsription ticket via the Telegram Bot containing specific filter tags so the system can instantly send a push notification to my phone the moment a matching item is uploaded.
+* **The Suscriber**: As a user who lost an item, I want to register a subscription ticket via the Telegram Bot containing specific filter tags so the system can instantly send a push notification to my phone the moment a matching item is uploaded.
 
 ---
 
@@ -70,10 +75,10 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 ### Feature 1: Conversational Telegram Bot Interface
 * **Milestone:** 2
 * **Status:** Implemented
-* **User role:** Public user/ Registered user
+* **User role:** Public user / Registered user
 * **What it does:** Provides a user-facing Telegram chat client that routes actions across adaptive workflows (Finders vs. Spotters vs. Losers) with custom buttons and navigation buttons
 * **Complexity justification:** Requires implementing a robust multi-state message router within Telegram to manage conversational context, record user inputs accurately, and allow users to backtrack without affecting the database payload.
-* **Design Decisions:** We cbose inline dynamic keyboards over raw text parsing to strictly control data validation and eliminate edge-case data corruption before it reaches Firestore database.
+* **Design Decisions:** We chose inline dynamic keyboards over raw text parsing to strictly control data validation and eliminate edge-case data corruption before it reaches Firestore database.
 
 ### Feature 2: Structured Campus Location Navigator
 * **Milestone:** 2
@@ -114,6 +119,14 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **Complexity justification:** Requires an automated background query thread across multiple Firestore collections based on category and location of item.
 * **Design decisions:** We would be using Telegram deep-linking for the claim handshake system to create a secure bridge between the web-interface and the Finder's private chat.
 
+### Feature 7: Automated Map Cleanup (14-day TTL)
+* **Milestone:** 3
+* **Status**: Not started
+* **User role:** Admin
+* **What it does:** A background script that automatically deletes item listings and map pins once they are older than 14 days.
+* **Complexity justification:** Requires building a scheduled thread that can access the database, compare timestamps and run batch deletions without interrupting the main bot.
+* **Design decisions:** We designed this Time-To-Live (TTL) feature to ensure the map remains clean and useful. Without it, the map would eventually become cluttered with thousands of old, irrelevant pins.
+
 ---
 
 ## Tech Stack
@@ -129,6 +142,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 ## System Architecture
 ![System Architecture](./system_architecture.jpg)
 Figure 1: High-level data flow diagram showing how the Telegram Bot, Database, and React Frontend communicate
+
 **Explanation:**
 The system is heavily decoupled via Firestore. The Python bot acts as the primary "Write" client, packing user inputs into standard JSON payloads. The React application acts as the "Read" client. Cloudinary exists as a parallel storage node to isolate media bandwidth from our database queries.
 
@@ -163,7 +177,7 @@ We employ a multi-level strategy prioritizing data contract integrity. Because o
 We conduct localized testing on different algorithms and functions. For example, our  `get_coordinates` function was heavily tested to ensure the randomized offset boundaries never push a map pin into a different faculty zone.
 
 ### System Tests
-End-to-end flows are verified manually across 2 devies. We trigger the 'Finder' flow and observe the immediate state change on the Web map to verify that the database latency remains under 2 seconds.
+End-to-end flows are verified manually across 2 devices. We trigger the 'Finder' flow and observe the immediate state change on the Web map to verify that the database latency remains under 2 seconds.
 
 ---
 
@@ -174,11 +188,11 @@ End-to-end flows are verified manually across 2 devies. We trigger the 'Finder' 
 * Feature 2: Structured Campus Location Navigator
 * Feature 4: End-to-End Image Processing Pipeline
 * Feature 5: Live Visual Web Map & Gallery Dashboard
-* Feature 6: Environment Control & Connection Architecture
 
 **Planned for Milestone 3**
 * Feature 3: Personal Listing Portfolio Manager (/manage)
-* Feature 7: Intelligent "Lost Ticket" Matchmaking Engine
+* Feature 6: Intelligent "Lost Ticket" Matchmaking Engine
+* Feature 7: Automated Map Cleanup (14-day TTL)
 * Deploy an automated TTL (Time-To-Live) janitor script to prune expired database records.
 
 **Risks and Mitigations:**
