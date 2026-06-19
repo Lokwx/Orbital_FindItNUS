@@ -2,19 +2,23 @@
 ### Unified Ecosystem for Campus Lost & Found
 
 <p align="center">
-  <img src="./team_logo.png" alt="FindItNUS Team Logo" width="600"/>
+  <img src="./team_logo.png" alt="FindItNUS Team Logo" width="500"/>
 </p>
 
-* Team Name: FindItNUS 
-* Level of Achievement: Gemini
+* **Team ID: 6807** 
+* **Level of Achievement:** Gemini
+* **Team Mmebers:** Gavin & Wei Xiong
+* **Milestone:** 2
+* **Deployment:** finditnus.vercel.app
 
 ---
 
 ## Table of Contents
-* [Description](#description)
-* [Motivation](#motivation)
-* [Aim](#aim)
+* [Problem Motivation](#problem-motivation)
+* [Target Audience](#target-audience)
+* [Our Solution](#our-solution)
 * [User Stories](#user-stories)
+* [System Features](#system-features)
   * [Milestone 1 (Current Baseline)](#user-stories---milestone-1)
   * [Milestones 2 & 3 (Future Scope)](#user-stories---future-scope)
   * [System Features](#system-features)
@@ -27,30 +31,35 @@
 
 ---
 
-## Description
-FindItNUS is an all-in-one lost & found application designed specifically for the NUS Community. The system comprises of an asynchronous Telegram Bot with a responsive React-based web map layout. This allows students to visually track, browse, filter, and reclaim lost items easily.
-
-## Motivation
+## Problem Motivation
 Lost & found management within campus is traditionally fragmented across informal, unstructured Telegram channels. While these platforms provide a quick way to disseminate information, uploaded posts are often unstructured. Crucial metadata, such as the exact date, time, and precise geographical location of the item is often missing or ambiguous. 
 Furthermore, listings are also not consistently updated after items have been returned to their owners, resulting in outdated or redundant postings. Consequently, users may need to spend significant time manually filtering through irrelevant posts when searching for their belongings.
 A more organised and visually intuitive digital platform could improve how lost-and-found information is reported, searched and managed within the NUS community.
 
-## Aim
+---
+
+## Target Audience
+**Primary Users:** NUS undergraduates and staff who frequently commute around the school campus and need an immediately, localized way to report of track misplaced belongings.
+**Secondary Users:** Campus security and student club leaders who manage physical lost & found boxes and need a digital inventory to broadcast unclaimed items.
+
+---
+
+## Our Solution
+FindItNUS is an all-in-one lost & found application designed specifically for the NUS Community. The system comprises of an asynchronous Telegram Bot with a responsive React-based web map layout. This allows students to visually track, browse, filter, and reclaim lost items easily.
+
 We aim to bridge this gap by designing a unified, dual-interface platform.
 1. A structured **Telegram Bot Interface** that standardizes item reporting right at the point of discovery.
 2. An interactive **Find-My Style Web Interface** that maps reported items as precise spatial coordinate markers on top of the campus layout.
 
 FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable.
 
-## User Stories
+---
 
-### User Stories - Milestone 1 (Current)
+## User Stories
 * **The Finder**: As a user who has found and kept an item, I want to create a structured listing via the Telegram bot so that the owner can contact me to arrange collection.
 * **The Searcher**: As a user who has lost an item, I want to visually browse interactive map listings so I can quickly check if anything was reported near the locations I visited today.
-
-### User Stories - Milestone 2 & 3
-* **The Witness**: As a student rushing to a class who spots an item, I want to quickly report it as **Spotted** via the Telegram Bot to alert the community, without being forced to keep it in my possession.
-* **The Reclaimer**: As a finder who created the listing, I want to use the Telegram Bot to toggle the item's state to **reclaimed** or delete it completely so it instantly disappears from the map layout.
+* **The Witness**: As a student rushing to a class who spots an item, I want to quickly report it as Spotted via the Telegram Bot to alert the community, without being forced to keep it in my possession.
+* **The Reclaimer**: As a finder who created the listing, I want to use the Telegram Bot to toggle the item's state to reclaimed or delete it completely so it instantly disappears from the map layout.
 * **The Suscriber**: As a user who lost an item, I want to register a subsription ticket via the Telegram Bot containing specific filter tags so the system can instantly send a push notification to my phone the moment a matching item is uploaded.
 
 ---
@@ -58,6 +67,10 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 ## System Features
 
 ### Feature 1: Conversational Telegram Bot Interface
+* **Milestone 2:** 2
+* **Status:** Implemented
+* **User Role:** Public User/ Registered User
+* **What it does:** Provides a user-facing 
 * **Milestone 1 Implementation**: Built a basic interface using Python framework. Enforced structured listings for item details and campus location.
 * **Milestone 2 Target**: Connect image upload pipelines so users can submit photos. Add options for finders to update an item's statusto "reclaimed" or "spotted".
 * **Milestone 3 Target**: Implement the "Lost Ticket" matching system to send automated push alerts to searchers.
