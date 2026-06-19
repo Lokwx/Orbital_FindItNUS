@@ -325,7 +325,7 @@ export default function App() {
                     type='button'
                     onClick={handleResetAllHistory}
                     className='flex flex-1 items-center justify-center w-20 h-10 bg-orange-400/50 rounded-xl border border-orange-400/60 my-2'>
-                    <h1 className='font-sans text-md text-center'>Clear All History</h1>
+                    <h1 className='font-sans text-center'>Clear All History</h1>
                 </button>
             </section>
         </main>

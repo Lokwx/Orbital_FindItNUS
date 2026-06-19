@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { Divider } from '@mui/material';
-import { Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History } from 'lucide-react';
+import { Bookmark, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPinCheck, MapPinX, MapPinSearch } from 'lucide-react';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -89,59 +89,89 @@ export default function LandingPage() {
                 {searchInput == '' && filterItems.length == 0 ? (
                     <></>
                 ) : filterItems.length == 0 ? (
-                    <section className="absolute w-full z-10 mt-1 bg-white border border-slate-400 rounded-xl shadow-lg">
-                        <p className="text-sm ml-2.5 py-2 truncate">No results found for &quot;{searchInput}&quot;</p>
+                    <section className="absolute w-full z-10 mt-1 flex flex-col bg-white rounded-xl shadow-xl border border-slate-200">
+                        <header className="flex items-center justify-between px-4 py-2 mb-2 rounded-sm border-b border-slate-300">
+                            <h1 className="font-semibold text-sm text-gray-500 tracking-tight">SEARCH RESULTS</h1>
+                            <p className="text-indigo-600">{filterItems.length}</p>
+                        </header>
+                        <p className="font-semibold text-sm text-gray-500 tracking-tight px-4 pt-1 pb-3 line-clamp-1">No results found for &quot;{searchInput}&quot;</p>
                     </section>
                 ) : (
-                    <section className="absolute w-full z-10 mt-1 flex flex-col bg-white border border-slate-400 rounded-xl shadow-lg">
+                    <section className="absolute w-full z-10 mt-1 flex flex-col bg-white rounded-xl shadow-xl border border-slate-200">
+                        <header className="flex items-center justify-between px-4 py-2 mb-2 rounded-sm border-b border-slate-300">
+                            <h1 className="font-semibold text-sm text-gray-500 tracking-tight">SEARCH RESULTS</h1>
+                            <p className="text-indigo-600">{filterItems.length}</p>
+                        </header>
                         {filterItems.map((itemData) => {
                             return (
                                 <section
                                     key={itemData.id}
-                                    className="flex min-w-0 items-center justify-between mx-2 my-1 px-2 shadow-sm rounded-xl"
+                                    className="flex w-full min-w-0 items-center"
                                 >
-                                    <div className="flex min-w-0 items-center justify-center gap-2">
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.4"
-                                            stroke="currentColor"
-                                            className="size-6 shrink-0"
-                                        >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z"
-                                            />
-                                        </svg>
-                                        <div className="flex flex-1 min-w-0 flex-col">
-                                            <h1 className="font-semibold text-sm truncate">{itemData.ItemName}</h1>
-                                            <h2 className="font-semibold text-sm truncate">
+                                    <div className="flex items-center justify-between">
+                                        {itemData.ReportType == 'lost' ? (
+                                            <div className="flex items-center justify-center rounded-xl bg-red-100 p-1.5 m-2 border border-red-200 shadow-md">
+                                                <MapPinX className="text-red-600" />
+                                            </div>
+                                        ) : itemData.ReportType == 'found' ? (
+                                            <div className="flex items-center justify-center rounded-xl bg-emerald-100 p-1.5 m-2 border border-emerald-200 shadow-md">
+                                                <MapPinCheck className="text-emerald-600" />
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center rounded-xl bg-yellow-100 p-1.5 m-2 border border-yellow-200 shadow-md">
+                                                <MapPinSearch className="text-yellow-600" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex min-w-0 flex-1 flex-col items-start justify-center mx-1 my-1">
+                                        <div className="flex flex-col w-full min-w-0 justify-between items-start">
+                                            <h1 className="w-full truncate font-semibold tracking-tight">
+                                                {itemData.ItemName}
+                                            </h1>
+                                            <h2 className="w-full truncate text-[14px] text-slate-800 tracking-tight">
                                                 {itemData.ItemLocation}, {itemData.ItemLocationDetail}
                                             </h2>
-                                            <h3 className="text-sm text-slate-400 truncate">{itemData.ItemDescription}</h3>
+                                            <h3 className='w-full truncate text-[12px] text-slate-600 line-clamp-1'>
+                                                {itemData.ItemDescription}
+                                            </h3>
                                         </div>
                                     </div>
-                                    <Link
-                                        href={`/Saved?location=NUS&id=${itemData.id}&latitude=${itemData.Latitude}&longitude=${itemData.Longitude}`}
-                                        className="px-2 py-4"
-                                    >
-                                        <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            strokeWidth="1.5"
-                                            stroke="currentColor"
-                                            className="size-6"
+                                    <div className="flex items-center">
+                                        {itemData.ReportType == 'lost' ? (
+                                            <div className="flex items-center justify-center rounded-2xl bg-red-100 px-2 py-1 border border-red-200 shadow-md">
+                                                <p className="text-red-600 text-[12px] font-semibold tracking-wider">LOST</p>
+                                            </div>
+                                        ) : itemData.ReportType == 'found' ? (
+                                            <div className="flex items-center justify-center rounded-2xl bg-emerald-100 px-2 py-1 border border-emerald-200 shadow-md">
+                                                <p className="text-emerald-600 text-[12px] font-semibold tracking-wider">FOUND</p>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center rounded-2xl bg-yellow-100 px-2 py-1 border border-yellow-200 shadow-md">
+                                                <p className="text-yellow-600 text-[12px] font-semibold tracking-wider">FOUND</p>
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex items-center">
+                                        <Link
+                                            href={`/Saved?location=NUS&id=${itemData.id}&latitude=${itemData.Latitude}&longitude=${itemData.Longitude}`}
+                                            className="px-2 py-4"
                                         >
-                                            <path
-                                                strokeLinecap="round"
-                                                strokeLinejoin="round"
-                                                d="m8.25 4.5 7.5 7.5-7.5 7.5"
-                                            />
-                                        </svg>
-                                    </Link>
+                                            <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                fill="none"
+                                                viewBox="0 0 24 24"
+                                                strokeWidth="1.5"
+                                                stroke="currentColor"
+                                                className="size-6"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    d="m8.25 4.5 7.5 7.5-7.5 7.5"
+                                                />
+                                            </svg>
+                                        </Link>
+                                    </div>
                                 </section>
                             );
                         })}

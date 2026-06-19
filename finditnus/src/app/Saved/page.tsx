@@ -134,7 +134,7 @@ function SavedPageContent() {
                     <ChevronLeft/>
                     </Link>
                     <div className='flex flex-col justify-center'>
-                        <h1 className='font-semibold text-md'>ITEMS NEAR</h1>
+                        <h1 className='font-semibold'>ITEMS NEAR</h1>
                         <h2 className='font-serif font-bold text-2xl'>{location}</h2>
                     </div>
                 </section>

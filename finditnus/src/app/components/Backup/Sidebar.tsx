@@ -89,7 +89,7 @@ export default function Sidebar() {
                             <h1 className="font-bold text-indigo-700">WX</h1>
                         </div>
                         <div className="flex flex-col items-start justify-center px-2">
-                            <h1 className="text-md">Wei Xiong</h1>
+                            <h1 className="">Wei Xiong</h1>
                             <p className="text-xs text-slate-600">View Profile</p>
                         </div>
                         <ChevronRight />

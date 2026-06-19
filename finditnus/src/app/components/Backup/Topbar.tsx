@@ -35,7 +35,7 @@ export default function Topbar() {
                         />
                     </div>
                     <div className="flex flex-col">
-                        <h1 className="font-bold text-md ">FindItNUS</h1>
+                        <h1 className="font-bold">FindItNUS</h1>
                         <p className="text-xs text-slate-500">NUS Lost & Found</p>
                     </div>
 

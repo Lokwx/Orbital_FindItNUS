@@ -15,7 +15,7 @@ export default function FilterPanel() {
                 </button>
             </div>
             <div className="flex flex-col gap-2">
-                <p className="mx-4 font-bold text-md">Listing Type</p>
+                <p className="mx-4 font-bold">Listing Type</p>
                 <div className="flex flex-row mx-2 items-center justify-center">
                     <button
                         type="button"
@@ -35,7 +35,7 @@ export default function FilterPanel() {
                     </button>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <p className="text-center font-bold text-md">Category</p>
+                    <p className="text-center font-bold">Category</p>
                     <FormControl
                         fullWidth
                         size="small"
@@ -54,7 +54,7 @@ export default function FilterPanel() {
                     </FormControl>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <p className="text-center font-bold text-md">Location</p>
+                    <p className="text-center font-bold">Location</p>
                     <FormControl
                         fullWidth
                         size="small"
@@ -75,7 +75,7 @@ export default function FilterPanel() {
                     </FormControl>
                 </div>
                 <div className="flex flex-col gap-2">
-                    <p className="text-center font-bold text-md">Date</p>
+                    <p className="text-center font-bold">Date</p>
                     <FormControl
                         fullWidth
                         size="small"
@@ -94,7 +94,7 @@ export default function FilterPanel() {
                 </div>
             </div>
             <div className="flex flex-col mt-4 gap-2">
-                <h1 className="text-center font-bold text-md">Category</h1>
+                <h1 className="text-center font-bold">Category</h1>
                 <div className="flex flex-col m-2">
                     <div className="flex flex-row gap-2 items-center justify-between text-nowrap">
                         <div>
