@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 
 import { Divider } from '@mui/material';
-import { Pill, Palette, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPinCheck, MapPinX, MapPinSearch, MapPin, ClockFading, Clock } from 'lucide-react';
+import { Pill, Palette, Laptop, CircuitBoard, Atom, CircleDollarSign, History, MapPinCheck, MapPinX, MapPinSearch, MapPin, ClockFading, Dot } from 'lucide-react';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -83,19 +83,19 @@ export default function LandingPage() {
         <main className="flex flex-col px-5 font-sans bg-slate-200/10 w-screen h-screen">
             <FindItNUSHeader />
             <section className="text-center">
-                <h1 className="text-4xl text-front font-serif font-bold tracking-tight">
+                <h1 className="text-4xl text-front font-serif font-bold tracking-tighter">
                     Stop searching
                     <br />
-                    everywhere.
+                    everywhere
                 </h1>
-                <h1 className="text-sm text-slate-400 pt-0.5">See lost and found reports across NUS.</h1>
+                <h1 className="text-sm text-slate-400 pt-0.5">Find lost and found listings across NUS</h1>
             </section>
             <section className="relative z-20 w-full pt-2">
                 <input
                     value={searchInput}
                     onChange={(event) => setSearchInput(event.target.value)}
-                    className="w-full rounded-xl border border-slate-400 shadow-sm py-2 pl-2 text-sm tracking-tight text-slate-900 "
-                    placeholder="Search for recently listed items 🔎"
+                    className="w-full rounded-xl border border-slate-400 shadow-sm py-2 pl-2 text-center text-sm tracking-tight text-slate-900 "
+                    placeholder="🔎 Search for recently listed items"
                 ></input>
 
                 {/* Search DropDown */}
@@ -192,19 +192,19 @@ export default function LandingPage() {
             </section>
             <Divider className="pt-2" />
             <section className="pt-1 flex flex-col gap-2 justify-center">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-center items-center">
                     <div className="flex py-1">
-                        <MapPin className="text-indigo-500" />
-                        <h1 className="pl-1 text-front font-semibold tracking-tight">LOCATIONS</h1>
+                        <MapPin className="text-sky-500 fill-sky-100" />
+                        <h1 className="pl-2 text-front font-semibold tracking-tight">LOCATIONS</h1>
                     </div>
-                    <div className="font-semibold text-indigo-500 px-2 py-1 tracking-tight">
+                    {/* <div className="font-semibold text-indigo-500 px-2 py-1 tracking-tight">
                         <Link
                             href="/Saved/ViewAll"
                             className="px-2 py-2"
                         >
                             VIEW ALL
                         </Link>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                     <Link
@@ -319,9 +319,9 @@ export default function LandingPage() {
             </section>
             <Divider className="p-2" />
             <section className="flex flex-col gap-1 justify-center">
-                <div className="flex justify-between items-center">
+                <div className="flex justify-center items-center">
                     <div className="flex pt-2">
-                        <History className="text-indigo-500" />
+                        <ClockFading className="text-red-500 fill-slate-50" />
                         <h1 className="pl-2 text-front font-semibold tracking-tight">RECENT LISTINGS</h1>
                     </div>
                     {/* <div className="font-semibold text-indigo-500 px-2 pt-2">
@@ -335,48 +335,37 @@ export default function LandingPage() {
                 </div>
             </section>
             <section className="w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm my-2">
-                {foundItems.slice(0, 3).map((itemData) => {
+                {foundItems.slice(0, 3).map((itemData, index) => {
                     return (
                         <div
                             key={itemData.id}
-                            className="flex w-full min-w-0 items-center overflow-y-auto pr-1"
+                            className="flex w-full min-w-0 items-center overflow-y-auto pr-1 border border-slate-100"
                         >
-                            <div className="flex items-center justify-between">
-                                {itemData.ReportType == 'lost' ? (
-                                    <div className="flex items-center justify-center rounded-xl bg-red-100 p-1.5 m-2 border border-red-200 shadow-md">
-                                        <MapPinX className="text-red-600" />
-                                    </div>
-                                ) : itemData.ReportType == 'found' ? (
-                                    <div className="flex items-center justify-center rounded-xl bg-emerald-100 p-1.5 m-2 border border-emerald-200 shadow-md">
-                                        <MapPinCheck className="text-emerald-600" />
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center justify-center rounded-xl bg-yellow-100 p-1.5 m-2 border border-yellow-200 shadow-md">
-                                        <MapPinSearch className="text-yellow-600" />
-                                    </div>
-                                )}
+                            <div className="flex items-center justify-between shrink-0">
+                                <div className="flex items-center justify-center px-2 py-1 m-2">
+                                    <div className="text-black-500">{index + 1}.</div>
+                                </div>
                             </div>
                             <div className="flex min-w-0 flex-1 flex-col items-start justify-center mx-1 my-1">
-                                <div className="flex flex-col w-full min-w-0 justify-between items-start">
-                                    <h1 className="w-full truncate font-semibold tracking-tight">{itemData.ItemName}</h1>
-                                    <h2 className="w-full truncate text-[14px] text-slate-800 tracking-tight">
-                                        {itemData.ItemLocation}, {itemData.ItemLocationDetail}
-                                    </h2>
-                                    <h3 className="w-full truncate text-[12px] text-slate-600 line-clamp-1">{itemData.ItemDescription}</h3>
+                                <div className="flex flex-col w-full min-w-0 justify-between items-start leading-tight">
+                                    <span className="mb-0.5">
+                                        <h1 className="w-full truncate font-semibold tracking-tight">{itemData.ItemName}</h1>
+                                        <h2 className="w-full truncate text-[14px] text-slate-800 tracking-tight">
+                                            {itemData.ItemLocation}, {itemData.ItemLocationDetail}
+                                        </h2>
+                                    </span>
+                                    <h3 className="w-full text-[12px] text-black line-clamp-2 tracking-tight">💬 {itemData.ItemDescription}</h3>
                                 </div>
                             </div>
                             <div className="flex flex-col items-center gap-2">
-                                {itemData.Hour == 1 ? (
-                                    <div className="flex items-center justify-center gap-1">
-                                        <ClockFading className="size-4 stroke-1" />
-                                        <span className="text-[12px] text-slate-600">{itemData.Hour} hour ago</span>
-                                    </div>
-                                ) : (
-                                    <div className="flex items-center justify-center gap-1">
-                                        <ClockFading className="size-4 stroke-1" />
-                                        <span className="text-[12px] text-slate-600">{itemData.Hour} hours ago</span>
-                                    </div>
-                                )}
+                                <div className="flex items-center justify-center gap-1">
+                                    <ClockFading className="size-4 stroke-2 mx-1 text-red-500" />
+                                    <span className="text-[12px] text-slate-950 text-center">
+                                        {itemData.Day}/{itemData.Month}/{itemData.Year}
+                                        <br />
+                                        {itemData.Hour}:{itemData.Minute}:{itemData.Second}
+                                    </span>
+                                </div>
                             </div>
                             <div className="flex items-center">
                                 <Link

@@ -33,7 +33,7 @@ export default function FindItNUSHeader({ returnURL }: PropType) {
                     className="relative size-8"
                     src="https://finditnus.web.app/logo.png"
                 />
-                <h1 className="pl-4 text-xl font-bold">FinditNUS</h1>
+                <h1 className="pl-4 text-xl font-bold tracking-wide">FindItNUS</h1>
             </section>
             {/* <section className="flex flex-row items-center justify-center gap-2">
                 <button
