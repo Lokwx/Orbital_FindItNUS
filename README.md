@@ -46,7 +46,7 @@ A more organised and visually intuitive digital platform could improve how lost 
 ---
 
 ## Target Audience
-**Primary Users:** NUS undergraduates and staff who frequently commute around the school campus and need an immediately, localized way to report of track misplaced belongings.
+**Primary Users:** NUS undergraduates and staff who frequently commute around the school campus and need an immediate, localized way of reporting or tracking misplaced belongings.
 
 **Secondary Users:** Campus security and student club leaders who manage physical lost & found boxes and need a digital inventory to broadcast unclaimed items.
 
