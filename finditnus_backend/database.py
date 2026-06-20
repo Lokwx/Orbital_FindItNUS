@@ -129,7 +129,7 @@ def update_listing_status(doc_id: str, new_status: str) -> bool:
             return False
         
         # Find the specific listing using the doc_id and update the 'status' field
-        db.collection("listings").document(doc_id).update({"status": new_status})
+        db.collection("listings").document(doc_id).update({"Status": new_status})
 
         logger.info(f"Successfully updated listing {doc_id} to status '{new_status}'.")
         return True
