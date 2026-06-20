@@ -2,7 +2,7 @@ import { ChevronLeft, Search } from 'lucide-react';
 
 import Link from 'next/link';
 
-import FindItNUSHeaderWithBack from '@/app/components/Header/FindItNUSHeaderWithBack';
+import FindItNUSHeaderWithBack from '@/app/components/Navigation/BackChevron';
 import LocationBox from '@/app/components/Boxes/LocationBox'
 import { Telegram } from '@mui/icons-material';
 

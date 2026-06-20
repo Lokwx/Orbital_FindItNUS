@@ -24,7 +24,7 @@ const pinIcon = L.divIcon({
         />
     `,
     iconSize: [36, 36],
-    popupAnchor: [-6, -14],
+    popupAnchor: [-6.5, -14],
     className: '',
 });
 
@@ -36,7 +36,7 @@ const selectedIcon = L.divIcon({
         />
     `,
     iconSize: [36, 36],
-    popupAnchor: [-6, -14],
+    popupAnchor: [-6.5, -18],
     className: '',
 });
 
@@ -136,9 +136,11 @@ type MapProps = {
     id?: string;
     latitude?: number;
     longitude?: number;
+    dateFilter?: string;
+    categoryFilter?: string;
 };
 
-export default function Map({ location, id, latitude, longitude }: MapProps) {
+export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter}: MapProps) {
     // Initial setup of origin location
     const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : 'NUS';
     const originX = NUS_AREA_COORDINATES[area].latitude;
@@ -156,6 +158,25 @@ export default function Map({ location, id, latitude, longitude }: MapProps) {
         loadDatabase();
     }, []);
 
+    const filteredItems = items.filter((item) => {
+        const matchCategoryFilter = (categoryFilter == null || categoryFilter === 'None' || item.ItemCategory?.toLowerCase().includes(categoryFilter.toLowerCase()))
+        if (matchCategoryFilter == false) return false;
+        
+        if (dateFilter == null || dateFilter === 'All Dates') return true;
+        if (item.Year == null || item.Month == null || item.Day == null) return false;
+        
+        const currentDate = new Date();
+        currentDate.setHours(0,0,0,0);
+        const itemDate = new Date(item.Year, item.Month - 1, item.Day)
+
+        const millisecondsPerDay = 1000 * 60 * 60 * 24;
+
+        const diffDays = (currentDate.getTime() - itemDate.getTime())/millisecondsPerDay ;
+        if (dateFilter === 'Today') return diffDays === 0;
+        if (dateFilter === 'Yesterday') return diffDays === 1;
+        if (dateFilter === 'Last Week') return diffDays >= 0 && diffDays <= 7;
+    })
+
     return (
         <div className="flex h-full w-full">
             <MapContainer
@@ -170,13 +191,15 @@ export default function Map({ location, id, latitude, longitude }: MapProps) {
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
 
-                {items.map((itemData) => (
+                {filteredItems.map((itemData) => (
                     <Marker
                         key={itemData.id}
                         position={itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position}
                         icon={id == null ? pinIcon : id == itemData.id ? selectedIcon : nonSelectedIcon}
                     >
-                        <Popup autoPan={true}>
+                        <Popup 
+                            autoPan={true}
+                        >
                             <section className="flex flex-col h-130 w-76 font-sans">
                                 <div className="flex w-full items-center border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
                                     <div className="flex w-full min-w-0 flex-row items-center gap-4">

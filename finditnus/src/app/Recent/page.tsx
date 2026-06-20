@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image';
 
-import FindItNUSHeaderWithBack from '@/app/components/Header/FindItNUSHeaderWithBack';
+import FindItNUSHeaderWithBack from '@/app/components/Navigation/BackChevron';
 import { Divider } from '@mui/material';
 
 export default function App() {

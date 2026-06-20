@@ -11,8 +11,10 @@ type ClientMapProps = {
     id?: string;
     latitude?: number;
     longitude?: number;
+    dateFilter?: string;
+    categoryFilter?: string
 }
 
-export default function ClientMap({location, id, latitude, longitude}:ClientMapProps) {
-    return <Map location={location} id={id} latitude={latitude} longitude={longitude}/>;
+export default function ClientMap({location, id, latitude, longitude, dateFilter, categoryFilter}:ClientMapProps) {
+    return <Map location={location} id={id} latitude={latitude} longitude={longitude} dateFilter={dateFilter} categoryFilter={categoryFilter}/>;
 }
