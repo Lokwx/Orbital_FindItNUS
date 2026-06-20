@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 
 import { Divider } from '@mui/material';
@@ -15,6 +15,8 @@ import { faTelegram } from '@fortawesome/free-brands-svg-icons';
 import Image from 'next/image';
 
 import { getAllItemData } from '@/Firebase';
+
+const latOffset = 0.006;
 
 const pinIcon = L.divIcon({
     html: `
@@ -124,7 +126,7 @@ const NUS_AREA_COORDINATES = {
         longitude: 103.77551105402769,
     },
     NUS: {
-        latitude: 1.29600000000000,
+        latitude: 1.29600000000000 - latOffset,
         longitude: 103.7765569888554,
     },
 };
@@ -139,6 +141,18 @@ type MapProps = {
     dateFilter?: string;
     categoryFilter?: string;
 };
+
+const UpdateMapPosition = ({ position }: { position: [number, number] }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        const updatedLat = position[0] + latOffset;
+        const updatedLong = position[1];
+        map.setView([updatedLat,updatedLong],16);
+    }, [map, position]);
+
+    return null;
+}
 
 export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter}: MapProps) {
     // Initial setup of origin location
@@ -177,6 +191,8 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
         if (dateFilter === 'Last Week') return diffDays >= 0 && diffDays <= 7;
     })
 
+    const [mapPosition, setMapPosition] = useState<[number, number]>(position)
+
     return (
         <div className="flex h-full w-full">
             <MapContainer
@@ -190,14 +206,28 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                     attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
+                <UpdateMapPosition position={mapPosition} />
 
-                {filteredItems.map((itemData) => (
-                    <Marker
-                        key={itemData.id}
-                        position={itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position}
-                        icon={id == null ? pinIcon : id == itemData.id ? selectedIcon : nonSelectedIcon}
-                    >
-                        <Popup autoPan={true}>
+                {filteredItems.map((itemData) => {
+                    const selectedMarkerPosition: [number, number] =
+                        itemData.Latitude != undefined && itemData.Longitude != undefined
+                            ? [itemData.Latitude, itemData.Longitude]
+                            : position;
+
+                    return (
+                        <Marker
+                            key={itemData.id}
+                            position={selectedMarkerPosition}
+                            icon={id == null ? pinIcon : id == itemData.id ? selectedIcon : nonSelectedIcon}
+                            eventHandlers={{
+                                click: () => {
+                                    setMapPosition(selectedMarkerPosition);
+                                },
+                            }}
+                        >
+                        <Popup 
+                            autoPan={false}
+                            >
                             <section className="flex flex-col h-130 w-76 font-sans">
                                 <div className="flex w-full items-center border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
                                     <div className="flex w-full min-w-0 flex-row items-center gap-4">
@@ -294,7 +324,8 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                             </section>
                         </Popup>
                     </Marker>
-                ))}
+                    );
+                })}
             </MapContainer>
         </div>
     );
