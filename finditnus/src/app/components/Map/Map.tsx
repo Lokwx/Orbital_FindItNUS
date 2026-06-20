@@ -140,6 +140,8 @@ type MapProps = {
     longitude?: number;
     dateFilter?: string;
     categoryFilter?: string;
+    listingsPanel: boolean;
+    setFilteredItems?: (items:Item[]) => void;
 };
 
 const UpdateMapPosition = ({ position }: { position: [number, number] }) => {
@@ -154,7 +156,17 @@ const UpdateMapPosition = ({ position }: { position: [number, number] }) => {
     return null;
 }
 
-export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter}: MapProps) {
+const ClosePopupDuringListingsPanel = ({ listingsPanel }: { listingsPanel:boolean }) => {
+    const map = useMap();
+
+    useEffect(() => {
+        if (listingsPanel) map.closePopup();
+    }, [map, listingsPanel]);
+
+    return null;
+}
+
+export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter, listingsPanel, setFilteredItems}: MapProps) {
     // Initial setup of origin location
     const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : 'NUS';
     const originX = NUS_AREA_COORDINATES[area].latitude;
@@ -191,10 +203,14 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
         if (dateFilter === 'Last Week') return diffDays >= 0 && diffDays <= 7;
     })
 
+    useEffect(() => {
+        setFilteredItems?.(filteredItems);
+    },[filteredItems,setFilteredItems]);
+
     const [mapPosition, setMapPosition] = useState<[number, number]>(position)
 
     return (
-        <div className="flex h-full w-full">
+        <section className="relative flex h-full w-full">
             <MapContainer
                 center={position}
                 zoom={16}
@@ -207,12 +223,10 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                     url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
                 <UpdateMapPosition position={mapPosition} />
+                <ClosePopupDuringListingsPanel listingsPanel={listingsPanel} />
 
                 {filteredItems.map((itemData) => {
-                    const selectedMarkerPosition: [number, number] =
-                        itemData.Latitude != undefined && itemData.Longitude != undefined
-                            ? [itemData.Latitude, itemData.Longitude]
-                            : position;
+                    const selectedMarkerPosition: [number, number] = itemData.Latitude != undefined && itemData.Longitude != undefined ? [itemData.Latitude, itemData.Longitude] : position;
 
                     return (
                         <Marker
@@ -225,108 +239,106 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                                 },
                             }}
                         >
-                        <Popup 
-                            autoPan={false}
-                            >
-                            <section className="flex flex-col h-130 w-76 font-sans">
-                                <div className="flex w-full items-center border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
-                                    <div className="flex w-full min-w-0 flex-row items-center gap-4">
-                                        <Image
-                                            src="https://thesvg.org/icons/google-maps/default.svg"
-                                            alt="Google Maps"
-                                            width={20}
-                                            height={20}
-                                            className="shrink-0"
-                                        />
-                                        <div className="flex min-w-0 flex-1 flex-row items-center text-start gap-4">
-                                            <div className="flex min-w-0 flex-1 flex-col">
-                                                <h1 className="truncate text-lg font-semibold">{itemData.ItemLocation}</h1>
-                                                <h2 className="truncate text-sm text-blue-600">{itemData.ItemLocationDetail}</h2>
-                                            </div>
-                                            <div className="mr-6 shrink-0">
-                                                {itemData.ReportType == 'found' ? (
-                                                    <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">
-                                                        <CircleCheck className="size-4 fill-emerald-600 text-emerald-600 stroke-white" />
-                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
-                                                    </div>
-                                                ) : itemData.ReportType == 'lost' ? (
-                                                    <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-2 text-red-700">
-                                                        <CircleX className="size-4 fill-red-600 text-red-600 stroke-white" />
-                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
-                                                    </div>
-                                                ) : (
-                                                    <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700">
-                                                        <CircleQuestionMark className="size-4 fill-amber-600 text-amber-600 stroke-white" />
-                                                        <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
-                                                    </div>
-                                                )}
+                            <Popup autoPan={false}>
+                                <section className="flex flex-col h-130 w-76 font-sans">
+                                    <div className="flex w-full items-center border border-slate-200 rounded-xl px-4 py-2 shadow-sm">
+                                        <div className="flex w-full min-w-0 flex-row items-center gap-4">
+                                            <Image
+                                                src="https://thesvg.org/icons/google-maps/default.svg"
+                                                alt="Google Maps"
+                                                width={20}
+                                                height={20}
+                                                className="shrink-0"
+                                            />
+                                            <div className="flex min-w-0 flex-1 flex-row items-center text-start gap-4">
+                                                <div className="flex min-w-0 flex-1 flex-col">
+                                                    <h1 className="truncate text-lg font-semibold">{itemData.ItemLocation}</h1>
+                                                    <h2 className="truncate text-sm text-blue-600">{itemData.ItemLocationDetail}</h2>
+                                                </div>
+                                                <div className="mr-6 shrink-0">
+                                                    {itemData.ReportType == 'found' ? (
+                                                        <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-2 text-emerald-700">
+                                                            <CircleCheck className="size-4 fill-emerald-600 text-emerald-600 stroke-white" />
+                                                            <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                        </div>
+                                                    ) : itemData.ReportType == 'lost' ? (
+                                                        <div className="inline-flex items-center gap-2 rounded-full border border-red-200 bg-red-50 px-3 py-2 text-red-700">
+                                                            <CircleX className="size-4 fill-red-600 text-red-600 stroke-white" />
+                                                            <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3 py-2 text-amber-700">
+                                                            <CircleQuestionMark className="size-4 fill-amber-600 text-amber-600 stroke-white" />
+                                                            <span className="text-xs font-bold tracking-wider">{itemData.ReportType?.toUpperCase()}</span>
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
 
-                                <span className="flex flex-col pl-4 justify-center items-start mt-2 mx-2">
-                                    <h1 className="text-xl font-bold">{itemData.ItemName}</h1>
-                                    <h2 className="line-clamp-2 text-slate-600">{itemData.ItemDescription}</h2>
-                                </span>
-                                <img
-                                    src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
-                                    alt={itemData.ItemName ?? 'Item Image'}
-                                    className="w-full h-40 object-scale-down rounded-md mt-2"
-                                ></img>
-                                <div className="my-2">
-                                    <Divider />
-                                </div>
-                                <section className="flex items-center justify-start">
-                                    <div className="rounded-full my-2 mx-4 p-1.5 bg-amber-100 border border-amber-200">
-                                        <Folder className="fill-amber-200" />
+                                    <span className="flex flex-col pl-4 justify-center items-start mt-2 mx-2">
+                                        <h1 className="text-xl font-bold">{itemData.ItemName}</h1>
+                                        <h2 className="line-clamp-2 text-slate-600">{itemData.ItemDescription}</h2>
+                                    </span>
+                                    <img
+                                        src={itemData.imageUrl ?? 'https://media.istockphoto.com/id/1271880340/vector/lost-items-line-vector-icon-unidentified-items-outline-isolated-icon.jpg?s=612x612&w=0&k=20&c=d2kHGEmowThp_UrqIPfhxibstH6Sq5yDZJ41NetzVaA='}
+                                        alt={itemData.ItemName ?? 'Item Image'}
+                                        className="w-full h-40 object-scale-down rounded-md mt-2"
+                                    ></img>
+                                    <div className="my-2">
+                                        <Divider />
                                     </div>
-                                    <div>
-                                        <h1 className="text-xs text-slate-500">Category</h1>
-                                        <h2 className="font-semibold font-sm">{itemData.ItemCategory}</h2>
-                                    </div>
+                                    <section className="flex items-center justify-start">
+                                        <div className="rounded-full my-2 mx-4 p-1.5 bg-amber-100 border border-amber-200">
+                                            <Folder className="fill-amber-200" />
+                                        </div>
+                                        <div>
+                                            <h1 className="text-xs text-slate-500">Category</h1>
+                                            <h2 className="font-semibold font-sm">{itemData.ItemCategory}</h2>
+                                        </div>
+                                    </section>
+                                    <section className="flex items-center justify-start">
+                                        <div className="rounded-full my-2 mx-4 p-1.5 bg-sky-100 border border-sky-200">
+                                            <UserRound className="fill-blue-100 stroke-blue-600" />
+                                        </div>
+                                        <div>
+                                            <h1 className="text-xs text-slate-500">Submitted By</h1>
+                                            <h2 className="font-semibold font-sm">@{itemData.UserName}</h2>
+                                        </div>
+                                    </section>
+                                    <section className="flex items-center justify-start">
+                                        <div className="rounded-full my-2 mx-4 p-1.5 bg-mist-100 border border-mist-200">
+                                            <CalendarClock />
+                                        </div>
+                                        <div>
+                                            <h1 className="text-xs text-slate-500">Reported At</h1>
+                                            <h2 className="font-semibold font-sm">
+                                                {itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}
+                                            </h2>
+                                        </div>
+                                    </section>
+                                    <section>
+                                        <a
+                                            href={`https://t.me/${itemData.UserName}`}
+                                            className="flex items-center justify-center self-stretch border-2 border-sky-200 bg-sky-100 rounded-xl shadow-md p-2 my-1 mx-4 gap-2"
+                                        >
+                                            <FontAwesomeIcon
+                                                icon={faTelegram}
+                                                size="xl"
+                                                className="text-blue-500 shrink-0"
+                                            />
+                                            <span className="truncate text-blue-500">
+                                                <span className="text-sky-900">Contact</span> @{itemData.UserName}
+                                            </span>
+                                        </a>
+                                    </section>
                                 </section>
-                                <section className="flex items-center justify-start">
-                                    <div className="rounded-full my-2 mx-4 p-1.5 bg-sky-100 border border-sky-200">
-                                        <UserRound className="fill-blue-100 stroke-blue-600" />
-                                    </div>
-                                    <div>
-                                        <h1 className="text-xs text-slate-500">Submitted By</h1>
-                                        <h2 className="font-semibold font-sm">@{itemData.UserName}</h2>
-                                    </div>
-                                </section>
-                                <section className="flex items-center justify-start">
-                                    <div className="rounded-full my-2 mx-4 p-1.5 bg-mist-100 border border-mist-200">
-                                        <CalendarClock />
-                                    </div>
-                                    <div>
-                                        <h1 className="text-xs text-slate-500">Reported At</h1>
-                                        <h2 className="font-semibold font-sm">
-                                            {itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}
-                                        </h2>
-                                    </div>
-                                </section>
-                                <section>
-                                    <a
-                                        href={`https://t.me/${itemData.UserName}`}
-                                        className="flex items-center justify-center self-stretch border-2 border-sky-200 bg-sky-100 rounded-xl shadow-md p-2 my-1 mx-4 gap-2"
-                                    >
-                                        <FontAwesomeIcon
-                                            icon={faTelegram}
-                                            size="xl"
-                                            className="text-blue-500 shrink-0"
-                                        />
-                                        <span className="truncate text-blue-500">
-                                            <span className="text-sky-900">Contact</span> @{itemData.UserName}
-                                        </span>
-                                    </a>
-                                </section>
-                            </section>
-                        </Popup>
-                    </Marker>
+                            </Popup>
+                        </Marker>
                     );
                 })}
             </MapContainer>
-        </div>
+        </section>
     );
 }
