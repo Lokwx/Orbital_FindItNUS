@@ -17,29 +17,38 @@ import Image from 'next/image';
 import { getAllItemData } from '@/Firebase';
 
 const pinIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="#ff0a0a" class="size-6">
-            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-            </svg>`,
+    html: `
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Map_Pin.svg"
+            style="width:22px;height:28px;"
+        />
+    `,
     iconSize: [36, 36],
-    popupAnchor: [-6, -8],
+    popupAnchor: [-6, -14],
     className: '',
 });
 
 const selectedIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="#ff0a0a" class="size-6">
-            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-            </svg>`,
+    html: `
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Map_Pin.svg"
+            style="width:22px;height:28px;"
+        />
+    `,
     iconSize: [36, 36],
-    popupAnchor: [-6, -8],
+    popupAnchor: [-6, -14],
     className: '',
 });
 
 const nonSelectedIcon = L.divIcon({
-    html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 26 26" fill="none" class="size-0">
-            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-            </svg>`,
-    iconSize: [36, 36],
-    popupAnchor: [-6, -8],
+    html: `
+        <img
+            src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Map_Pin.svg"
+            style="width:0px;height:0px;"
+        />
+    `,
+    iconSize: [0, 0],
+    popupAnchor: [-6, -14],
     className: '',
 });
 
@@ -115,8 +124,8 @@ const NUS_AREA_COORDINATES = {
         longitude: 103.77551105402769,
     },
     NUS: {
-        latitude: 1.2975810637778415,
-        longitude: 103.77788569888554,
+        latitude: 1.29600000000000,
+        longitude: 103.7765569888554,
     },
 };
 
@@ -151,13 +160,14 @@ export default function Map({ location, id, latitude, longitude }: MapProps) {
         <div className="flex h-full w-full">
             <MapContainer
                 center={position}
-                zoom={15}
+                zoom={16}
                 scrollWheelZoom={true}
+                zoomControl={false}
                 className="h-full w-full"
             >
                 <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+                    url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
                 />
 
                 {items.map((itemData) => (
