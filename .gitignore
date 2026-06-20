@@ -3,3 +3,4 @@ serviceAccountKey.json
 .env
 
 /finditnus_backend/__pycache__/
+.vercel

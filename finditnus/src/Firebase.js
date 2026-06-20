@@ -2,12 +2,13 @@ import { initializeApp } from "firebase/app";
 import { getFirestore, doc, collection, collectionGroup, setDoc, getDoc, updateDoc, getDocs, query, orderBy, limit } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDm1tq9FEmOYRA_hPcq1Gc7DTiBm07aiMQ",
-  authDomain: "finditnus-7a17d.firebaseapp.com",
-  projectId: "finditnus-7a17d",
-  storageBucket: "finditnus-7a17d.firebasestorage.app",
-  messagingSenderId: "465881690353",
-  appId: "1:465881690353:web:b2e5c6541d394b72aa7950"
+  apiKey: "AIzaSyCfWCokIAFl9cB4YF8iod7z-IgbTA60x0k",
+  authDomain: "finditnus.firebaseapp.com",
+  projectId: "finditnus",
+  storageBucket: "finditnus.firebasestorage.app",
+  messagingSenderId: "546796211311",
+  appId: "1:546796211311:web:be849a5f789850ed2d119a",
+  measurementId: "G-8Q8ET4XXMY"
 };
 
 // Initialize Firebase
