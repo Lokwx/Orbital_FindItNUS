@@ -83,7 +83,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **Milestone:** 2
 * **Status:** Implemented
 * **User role**: Registered user
-* **What it does:** Provides a `\manage` command dashboard giving students full ownership to view, update statuses (e.g. active → reclaimed), or permanently delete their submitted reports directly inside Telegram.
+* **What it does:** Provides a `/manage` command dashboard giving students full ownership to view, update statuses (e.g. active → reclaimed), or permanently delete their submitted reports directly inside Telegram.
 * **Complexity justification:** Requires asynchronous query scripts to filter database records by chat ID, alongside backend utilities that synchronously wipe documents out of database without manual intervention.
 * **Design decisions:** We attached an inline interaction row directly inside the Telegram bot which allows for rapid, one-click inventory actions without forcing the user to open a separate web portal.
 
