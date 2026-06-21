@@ -1,4 +1,4 @@
-# Orbital 2026
+# Orbital 2026: FindItNUS
 ### Unified Ecosystem for Campus Lost & Found
 
 <p align="center">
@@ -9,23 +9,15 @@
 * **Level of Achievement:** Gemini
 * **Team Members:** Gavin & Wei Xiong
 * **Milestone:** 2
-* **Deployment:** finditnus.vercel.app
+* **Deployment:** [finditnus.vercel.app](https://finditnus.vercel.app)
 
 ---
 
 ## Table of Contents
 * [Problem Motivation](#problem-motivation)
-* [Target Audience](#target-audience)
+* [Target Audience & User Stories](#target-audience-user--stories)
 * [Our Solution](#our-solution)
-* [User Stories](#user-stories)
 * [System Features](#system-features)
-  * [Feature 1: Conversational Telegram Bot Interface](#feature-1-conversational-telegram-bot-interface)
-  * [Feature 2: Structured Campus Location Navigator](#feature-2-structured-campus-location-navigator)
-  * [Feature 3: Personal Listing Portfolio Manager](#feature-3-personal-listing-portfolio-manager)
-  * [Feature 4: End-to-End Image Processing Pipeline](#feature-4-end-to-end-image-processing-pipeline)
-  * [Feature 5: Live Visual Web Map & Gallery Dashboard](#feature-5-live-visual-web-map--gallery-dashboard)
-  * [Feature 6: Intelligent "Lost Ticket" Matchmaking Engine](#feature-6-intelligent-lost-ticket-matchmaking-engine)
-  * [Feature 7: Automated Map Cleanup (14-day TTL)](#feature-7-automated-map-cleanup-14-day-ttl)
 * [Tech Stack](#tech-stack)
 * [System Architecture](#system-architecture)
 * [Planning & Version Control](#planning-version-control)
@@ -45,10 +37,16 @@ A more organised and visually intuitive digital platform could improve how lost 
 
 ---
 
-## Target Audience
+## Target Audience & User Stories
 **Primary Users:** NUS students and staff who frequently commute around the school campus and need an immediate, localized way of reporting or tracking misplaced belongings.
 
 **Secondary Users:** Campus security and student club leaders who manage physical lost & found boxes and need a digital inventory to broadcast unclaimed items.
+
+* **The Finder**: As a user who has found and kept an item, I want to create a structured listing via the Telegram bot so that the owner can contact me to arrange collection.
+* **The Loser**: As a user who has lost an item, I want to visually browse interactive map listings so I can quickly check if anything was reported near the locations I visited today.
+* **The Spotter**: As a student rushing to a class who spots an item, I want to quickly report it as Spotted via the Telegram Bot to alert the community, without being forced to keep it in my possession.
+* **The Reclaimer**: As a finder who created the listing, I want to use the Telegram Bot to toggle the item's state to reclaimed or delete it completely so it instantly disappears from the map layout.
+* **The Subscriber**: As a user who lost an item, I want to register a subscription ticket via the Telegram Bot containing specific filter tags so the system can instantly send a push notification to my phone the moment a matching item is uploaded.
 
 ---
 
@@ -63,26 +61,17 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 
 ---
 
-## User Stories
-* **The Finder**: As a user who has found and kept an item, I want to create a structured listing via the Telegram bot so that the owner can contact me to arrange collection.
-* **The Loser**: As a user who has lost an item, I want to visually browse interactive map listings so I can quickly check if anything was reported near the locations I visited today.
-* **The Spotter**: As a student rushing to a class who spots an item, I want to quickly report it as Spotted via the Telegram Bot to alert the community, without being forced to keep it in my possession.
-* **The Reclaimer**: As a finder who created the listing, I want to use the Telegram Bot to toggle the item's state to reclaimed or delete it completely so it instantly disappears from the map layout.
-* **The Subscriber**: As a user who lost an item, I want to register a subscription ticket via the Telegram Bot containing specific filter tags so the system can instantly send a push notification to my phone the moment a matching item is uploaded.
+### System Features
 
----
-
-## System Features
-
-### Feature 1: Conversational Telegram Bot Interface
+**Feature 1: Conversational Telegram Bot Interface**
 * **Milestone:** 2
 * **Status:** Implemented
 * **User role:** Public user / Registered user
-* **What it does:** Provides a user-facing Telegram chat client that routes actions across adaptive workflows (Finders vs. Spotters vs. Losers) with custom buttons and navigation buttons
-* **Complexity justification:** Requires implementing a robust multi-state message router within Telegram to manage conversational context, record user inputs accurately, and allow users to backtrack without affecting the database payload.
-* **Design Decisions:** We chose inline dynamic keyboards over raw text parsing to strictly control data validation and eliminate edge-case data corruption before it reaches Firestore database.
+* **What it does:** Provides a user-facing Telegram chat client that routes actions across adaptive workflows (Finders vs. Spotters vs. Losers) with custom buttons and navigation buttons to standardize item reporting.
+* **Complexity justification:** Requires implementing a robust multi-state message router within the Telegram API to manage conversational context, record user inputs accurately, and allow users to backtrack without affecting the database payload.
+* **Design Decisions:** We chose inline dynamic keyboards over raw text parsing to strictly control data validation and eliminate edge-case data corruption before it reaches our database.
 
-### Feature 2: Structured Campus Location Navigator
+**Feature 2: Structured Campus Location Navigator**
 * **Milestone:** 2
 * **Status:** Implemented
 * **User role:** Public user
@@ -90,44 +79,44 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **Complexity justification:** Requires a robust coordinate registry mapping logic, alongside dynamic routing for custom text spots and pairs them with the baseline coordinates of surrounding faculty zones.
 * **Design decisions:** We implemented a randomized coordinate offset (Jitter) algorithm to ensure predefined landmark map pins dont invisibly stack on top of each other.
 
-### Feature 3: Personal Listing Portfolio Manager
-* **Milestone:** 3
-* **Status:** In progress
+**Feature 3: Personal Listing Portfolio Manager**
+* **Milestone:** 2
+* **Status:** Implemented
 * **User role**: Registered user
-* **What it does:** Provides a command dashboard giving students full ownership to view, update statuses (e.g. active → reclaimed), or delete their submitted reports directly inside Telegram.
-* **Complexity justification:** Requires asynchronous query scripts to filter database records by chat ID, alongside backend utilities that synchronously wipe documents out of cloud storage and images from Cloudinary without manual database work.
-* **Design decisions:** We attached an inline interaction row directly inside the Telegram bot (/manage) which allows for rapid, one-click inventory actions without forcing the user to open a separate web portal.
+* **What it does:** Provides a `\manage` command dashboard giving students full ownership to view, update statuses (e.g. active → reclaimed), or permanently delete their submitted reports directly inside Telegram.
+* **Complexity justification:** Requires asynchronous query scripts to filter database records by chat ID, alongside backend utilities that synchronously wipe documents out of database without manual intervention.
+* **Design decisions:** We attached an inline interaction row directly inside the Telegram bot which allows for rapid, one-click inventory actions without forcing the user to open a separate web portal.
 
-### Feature 4: End-to-End Image Processing Pipeline
+**Feature 4: End-to-End Image Processing Pipeline**
 * **Milestone:** 2
 * **Status:** Implemented
 * **User role:** Public user / Registered user
 * **What it does:** An automated image pipeline which optimizes and uploads images of found items to Cloudinary and syncing it to the database payload.
-* **Design decisions:** We offloaded image storage completely to Cloudinary instead of Firestore to isolate media bandwidth and also due to the paid plan in Firebase.
+* **Design decisions:** We offloaded image storage completely to Cloudinary instead of Firestore to isolate media bandwidth and bypass Firebase pricing limits.
 
-### Feature 5: Live Visual Web Map & Gallery Dashboard
+**Feature 5: Live Visual Web Map & Gallery Dashboard**
 * **Milestone:** 2
 * **Status:** Implemented
 * **User role:** Public user
 * **What it does:** A public website mapping campus lost & found items across interactive visual coordinates with corresponding visual preview cards.
 * **Complexity justification:** Establishing real-time reading loops connecting the frontend to Firestore database dynamically, ensuring instant pin rendering without browser refresh.
-* **Design decisions:** We built our interface with React, using Next.js as the framework, and hosting it on Vercel.
+* **Design decisions:** We built our interface with React and Next.js, utilizing Leaflet and OpenStreetMap integrations to handle the visual map tiles.
 
-### Feature 6: Intelligent "Lost Ticket" Matchmaking Engine
+**Feature 6: Intelligent "Lost Ticket" Matchmaking Engine**
 * **Milestone:** 3
-* **Status:** In progress
+* **Status:** Not started
 * **User role:** Registered user
 * **What it does:** An active notification service that cross-references newly found item reports against missing item requests to dispatch instant push notifications.
 * **Complexity justification:** Requires an automated background query thread across multiple Firestore collections based on category and location of item.
 * **Design decisions:** We would be using Telegram deep-linking for the claim handshake system to create a secure bridge between the web-interface and the Finder's private chat.
 
-### Feature 7: Automated Map Cleanup (14-day TTL)
+**Feature 7: Automated Map Cleanup (14-day TTL)**
 * **Milestone:** 3
 * **Status**: Not started
 * **User role:** Admin
 * **What it does:** A background script that automatically deletes item listings and map pins once they are older than 14 days.
-* **Complexity justification:** Requires building a scheduled thread that can access the database, compare timestamps and run batch deletions without interrupting the main bot.
-* **Design decisions:** We designed this Time-To-Live (TTL) feature to ensure the map remains clean and useful. Without it, the map would eventually become cluttered with thousands of old, irrelevant pins.
+* **Complexity justification:** Requires building a scheduled thread that can access the database, compare timestamps and run batch deletions without interrupting the main bot and also ensures that it triggers a cleanup of the associated Cloudinary image.
+* **Design decisions:** Instead of building a custom cron job, we will be utilizing Firestore's native TTL expiry rules.
 
 ---
 
@@ -138,6 +127,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 | **Backend** | Python (`python-telegram-bot`) | Python offers unparalleled speed for scripting asynchronous state-machines and processing binary image buffers. |
 | **Database** | Firebase Firestore | A NoSQL document database fits our schema perfectly, allowing real-time websocket synchronization directly to the frontend. |
 | **Storage** | Cloudinary API | Offloads heavy image hosting from our database; handles dynamic image down-sampling and secure signature validation. |
+| **Hosting** | Vercel | Designed specifically for Next.js applications, offering seamless CI/CD pipeline deployments from Github. |
 
 ---
 
@@ -146,56 +136,72 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 Figure 1: High-level data flow diagram showing how the Telegram Bot, Database, and React Frontend communicate
 
 **Explanation:**
-The system is heavily decoupled via Firestore. The Python bot acts as the primary "Write" client, packing user inputs into standard JSON payloads. The React application acts as the "Read" client. Cloudinary exists as a parallel storage node to isolate media bandwidth from our database queries.
+The system is heavily decoupled via Firestore. The Python bot acts as the primary "Write" client, packing user inputs into standard JSON payloads. The React application hosted on Vercel acts as the "Read" client. Cloudinary exists as a parallel storage node to isolate media bandwidth from our primary database queries.
 
 **Key User Journey:**
-* **Actor:** Student (Finder/ Spotter)
-* **Goal:** Report a lost wallet found at COM1.
-* **Steps:** User opens Telegram bot `/start` → Navigates "Computing" > "COM1" → Uploads photo → Enters description → Payload is saved to Firestore.
-* **Outcome:** The wallet instantly appears as a clickable pin on the live web map for all campus users.
+1. **The Finder (Data Creation):**
+   * *Steps:* User opens Telegram bot `/start` ➔ Clicks "I Found an Item" ➔ Navigates "Computing" > "COM1" ➔ Uploads photo ➔ Enters description ➔ Payload is saved to Firestore.
+   * *Outcome:* The item instantly appears as a clickable pin on the live web map.
+2. **The Loser (Data Retrieval):**
+   * *Steps:* User launches the web portal via the `/website` command ➔ Filters the interactive Leaflet map by the "Computing" zone ➔ Clicks a pin to view the uploaded photo and description.
+   * *Outcome:* User identifies their item and uses the details to retrieve it.
+3. **The Spotter (Rapid Ping):**
+   * *Steps:* User opens bot `/start` ➔ Clicks "I Spotted an Item" ➔ Selects "Central Library" ➔ Takes a quick photo.
+   * *Outcome:* A `Status: "spotted"` pin is added to the map alerting the community, without the user taking the item.
+4. **The Reclaimer (Data Cleanup):**
+   * *Steps:* Finder opens bot ➔ Runs `/manage` ➔ Selects the active item ➔ Clicks "Mark as Reclaimed".
+   * *Outcome:* The Firestore status updates to `reclaimed`, instantly removing the pin from the active web map.
 
 ---
 
 ## Planning & Version Control
-To fill up
+* **GitHub Repository:** [https://github.com/Lokwx/Orbital_FindItNUS](https://github.com/Lokwx/Orbital_FindItNUS)
+* **Branching Strategy:** We maintain a `main` branch for production codes and separate feature branches for isolated development. Manual testing are required before merging to the shared codebase.
+* **Commit Conventions:** We enforce strict conventional commits to map updates to specific features, bug fixes, or documentation. Some examples from our development include:
+    * `feat: added /website and /manage dashboard logic`
+    * `fix: update the recent icons with google map icons`
 
 ---
 
 ## Technical Proof of Concept
-**Live System Demo:**
+**Live System Demo:** [https://finditnus.vercel.app](https://finditnus.vercel.app)
 
 **What the POC demonstrates:**
 1. A user can open the Telegram bot, navigate the state-machine, and upload an image of a found item. This data is successfully persisted to our Firestore `listings` collection.
-2. The React frontend actively listens to the database and instantly dynamically renders the Leaflet map pin and sidebar gallery card with the correct jitter offsets applied.
+2. The image is passed through our Cloudinary pipeline and generates a secure URL.
+3. The React frontend actively listens to the database and instantly renders the Leaflet map pin and sidebar gallery card with the correct image and jitter offsets applied.
+4. A user can execute the `/manage` command in Telegram to mark their live listing as "reclaimed," which successfully updates the frontend UI dynamically.
 
 ---
 
 ## Testing
 
 ### Testing Strategy 
-We employ a multi-level strategy prioritizing data contract integrity. Because our system is decoupled, ensuring the backend payload exactly matches the frontend's expected schema is critical to prevent UI crashes.
+We employed manual system testing to verify our core end-to-end system between frontend and backend.
 
-### Unit Tests
-We conduct localized testing on different algorithms and functions. For example, our  `get_coordinates` function was heavily tested to ensure the randomized offset boundaries never push a map pin into a different faculty zone.
-
-### System Tests
-End-to-end flows are verified manually across 2 devices. We trigger the 'Finder' flow and observe the immediate state change on the Web map to verify that the database latency remains under 2 seconds.
-
+| Test Case | Steps | Expected Result | Actual Result | Pass? |
+| :--- | :--- | :--- | :--- | :--- |
+| **Finder Workflow (Data creation)** | 1. Open Telegram bot and run `/start`.<br>2. Select "Finder" ➔ "UTown" ➔ "Fine Food".<br>3. Upload test image and text.<br>4. Open Web Map. | The bot confirms upload. The web map instantly displays a new pin at UTown with the corresponding image and "Found" visual indicator. | As expected. | ✅ |
+| **Spotter Workflow (Data creation)** | 1. Open Telegram bot and run `/start`.<br>2. Select "Spotter" ➔ "Central Library" ➔ "Main Building".<br>3. Upload test image and text.<br>4. Open Web Map. | The bot confirms upload. The web map instantly displays a new pin at Central Library with the corresponding image and "Spotted" visual indicator. | As expected. | ✅ |
+| **Loser Workflow (Item retrieval)** | 1. Open Telegram bot and run `/website`.<br>2. Open the Web Map.<br>3.Navigate the Web Map to a specific faculty zone.<br>4. Click on an active item pin. | The Web Map loads seamlessly. Clicking the pin successful opens the preview card display the exact item description and details. Click on the "Claim item" button to open a secure chat with the Finder. | As expected. | ✅ |
+| **Portfolio Sync (Data update)** | 1. Open bot and run `/manage`.<br>2. Select the item just created.<br>3. Click "Mark as Reclaimed".<br>4. Check Web Map. | The item's status flag in Telegram updates to "Reclaimed". The Web Map UI filters it out. | As expected. | ✅ |
+| **Listing Deletion (Data wipe)** | 1. Open bot and run `/manage`.<br>2. Click "Delete Entirely".<br>3. Check Web Map. | The item is wiped from Firestore and immediately vanishes from the Web Map. | As expected. | ✅ |
 ---
 
 ## Development Plan
 
 **Completed (By Milestone 2)**
-* Feature 1: Conversational Bot Interface & Flow Controller
+* Feature 1: Conversational Telegram Bot Interface
 * Feature 2: Structured Campus Location Navigator
+* Feature 3: Personal Listing Portfolio Manager (/manage)
 * Feature 4: End-to-End Image Processing Pipeline
 * Feature 5: Live Visual Web Map & Gallery Dashboard
 
 **Planned for Milestone 3**
-* Feature 3: Personal Listing Portfolio Manager (/manage)
 * Feature 6: Intelligent "Lost Ticket" Matchmaking Engine
 * Feature 7: Automated Map Cleanup (14-day TTL)
-* Deploy an automated TTL (Time-To-Live) janitor script to prune expired database records.
+* Comprehensive UI/UX updates across the web dashboard
+* Executing user testing to gather feedback
 
 **Risks and Mitigations:**
 * **Risk:** Data formatting desync between the frontend and backend.
