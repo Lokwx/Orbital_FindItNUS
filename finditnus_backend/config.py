@@ -28,6 +28,6 @@ CLOUDINARY_API_SECRET = os.environ.get("CLOUDINARY_API_SECRET", "placeholder_clo
 IS_LOCAL_DEVELOPMENT = Path(ROOT_DIR / ".local_dev").exists()
 
 if IS_LOCAL_DEVELOPMENT:
-    WEB_APP_BASE_URL = "https://finditnus-indol.vercel.app"  
+    WEB_APP_BASE_URL = "https://finditnus.vercel.app/"  
 else:
     WEB_APP_BASE_URL = ""

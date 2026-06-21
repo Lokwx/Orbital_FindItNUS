@@ -440,6 +440,19 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     elif data.startswith("mng_delete_"):
         doc_id = data.replace("mng_delete_", "")
 
+        # Delete from both Firestore and Cloudinary
+        try:
+            if database.db is None:
+                database.initialize_database()
+            doc_ref = database.db.collection("listings").document(doc_id).get()
+
+            if doc_ref.exists:
+                public_id = doc_ref.to_dict().get("cloudinaryPublicId")
+                if public_id:
+                    storage.delete_image(public_id)
+        except Exception as e:
+            logger.error(f"Error: {e}")
+
         success = database.delete_listing(doc_id)
 
         if success:
@@ -649,6 +662,7 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
         "Hour": now.hour,
         "Minute": now.minute,
         "Second": now.second,
+        "expireAt": now + timedelta(Days = 14)
 
         # Image
         "imageUrl": user_data.get("temp_img_url"),
