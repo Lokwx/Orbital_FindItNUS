@@ -662,7 +662,7 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
         "Hour": now.hour,
         "Minute": now.minute,
         "Second": now.second,
-        "expireAt": now + timedelta(Days = 14)
+        "expireAt": now + timedelta(days = 14),
 
         # Image
         "imageUrl": user_data.get("temp_img_url"),
