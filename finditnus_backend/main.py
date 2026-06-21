@@ -146,12 +146,12 @@ ZONE_KEYBOARD_MAP = {
     ],
     "zone_bus_stops": [
         [InlineKeyboardButton("🚏 IT Stop", callback_data="spot_bus_it"), InlineKeyboardButton("🚏 CLB Stop", callback_data="spot_bus_clb")],
-        [InlineKeyboardButton("𚚏 YIH Stop", callback_data="spot_bus_yih"), InlineKeyboardButton("𚚏 Opp YIH Stop", callback_data="spot_bus_oppyih")],
-        [InlineKeyboardButton("𚚏 UTown Stop", callback_data="spot_bus_utown"), InlineKeyboardButton("𚚏 Museum Stop", callback_data="spot_bus_museum")],
-        [InlineKeyboardButton("𚚏 COM 3 Stop", callback_data="spot_bus_com3"), InlineKeyboardButton("𚚏 PGP Terminal", callback_data="spot_bus_pgr")],
-        [InlineKeyboardButton("𚚏 LT 27 Stop", callback_data="spot_bus_lt27"), InlineKeyboardButton("𚚏 S17 Stop", callback_data="spot_bus_s17")],
-        [InlineKeyboardButton("𚚏 UHC Stop", callback_data="spot_bus_uhc"), InlineKeyboardButton("𚚏 Opp UHC Stop", callback_data="spot_bus_oppuhc")],
-        [InlineKeyboardButton("𚚏 Univ Hall", callback_data="spot_bus_uhall"), InlineKeyboardButton("𚚏 Opp Univ Hall", callback_data="spot_bus_oppuhall")],
+        [InlineKeyboardButton("🚏 YIH Stop", callback_data="spot_bus_yih"), InlineKeyboardButton("🚏 Opp YIH Stop", callback_data="spot_bus_oppyih")],
+        [InlineKeyboardButton("🚏 UTown Stop", callback_data="spot_bus_utown"), InlineKeyboardButton("🚏 Museum Stop", callback_data="spot_bus_museum")],
+        [InlineKeyboardButton("🚏 COM 3 Stop", callback_data="spot_bus_com3"), InlineKeyboardButton("🚏 PGP Terminal", callback_data="spot_bus_pgr")],
+        [InlineKeyboardButton("🚏 LT 27 Stop", callback_data="spot_bus_lt27"), InlineKeyboardButton("🚏 S17 Stop", callback_data="spot_bus_s17")],
+        [InlineKeyboardButton("🚏 UHC Stop", callback_data="spot_bus_uhc"), InlineKeyboardButton("🚏 Opp UHC Stop", callback_data="spot_bus_oppuhc")],
+        [InlineKeyboardButton("🚏 Univ Hall", callback_data="spot_bus_uhall"), InlineKeyboardButton("🚏 Opp Univ Hall", callback_data="spot_bus_oppuhall")],
         [InlineKeyboardButton("🖊️ Custom Spot", callback_data="spot_custom_input"), InlineKeyboardButton("⬅️ Back", callback_data="back_to_macro")]
     ]
 }
@@ -329,6 +329,19 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
             parse_mode = "HTML"
         )
 
+    # Handles "Entire Campus" selection
+    elif data == "zone_all_campus":
+        context.user_data["active_macro_key"] = "Entire Campus"
+        context.user_data["active_micro_key"] = "Anywhere"
+
+        text = f"<b>{prefix}</b> ➔ <b>Entire Campus Search</b>\n\nWhat category does this item fall into?"
+
+        await query.edit_message_text(
+            text = text,
+            reply_markup = InlineKeyboardMarkup(CATEGORY_KEYBOARD),
+            parse_mode = "HTML"
+        )
+
     # Handles macro location selection
     elif data in ZONE_KEYBOARD_MAP:
         context.user_data["active_macro_key"] = data
@@ -372,13 +385,23 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     # Handles category selection
     elif data.startswith("cat_"):
         context.user_data["active_category_key"] = data
-        context.user_data["state"] = "AWAITING_ITEM_NAME"
 
-        await query.edit_message_text(
-            text = "<b>Give this item a short title?</b> (Example: Black iPhone 15)",
-            reply_markup = None,
-            parse_mode = "HTML"
-        )
+        # Finder & Spotter Flow
+        if user_flow in ["finder", "spotted"]:
+            context.user_data["state"] = "AWAITING_ITEM_NAME"
+            await query.edit_message_text(
+                text = "<b>Give this item a short title?</b> (Example: Black iPhone 15)",
+                reply_markup = None,
+                parse_mode = "HTML"
+            )
+        # Loser Flow
+        else:
+            context.user_data["state"] = "AWAITING_KEYWORD"
+            await query.edit_message_text(
+                text = "🎟️ <b>Lost Search Ticket Setup</b>\n\nPlease type a single keyword tracking identifier (Example: 'iphone', 'wallet'):",
+                reply_markup = None,
+                parse_mode = "HTML"
+            )
 
     elif data == "back_to_macro":
         if user_flow == "loser":
@@ -535,7 +558,13 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
     # Check the current state of the user
     curr_state = context.user_data.get("state")
     user_flow = context.user_data.get("user_flow")
-    prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
+
+    if user_flow == "finder":
+        prefix = "🟢 Finder"
+    elif user_flow == "spotted":
+        prefix = "🟡 Spotter"
+    else:
+        prefix = "🔵 Loser"
 
     # 1. User is at the custom location description question
     if curr_state == "AWAITING_CUSTOM_SPOT":
@@ -576,8 +605,49 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 text = "Please describe the item",
                 parse_mode = "HTML"
             )
+    
+    # 3. User is at the Lost Item Keyword question 
+    elif curr_state == "AWAITING_KEYWORD" and user_flow == "loser":
+        keyword = update.message.text.strip().lower()
+        chat_id = update.effective_chat.id
 
-    # 3. User is at the item description question
+        macro_key = context.user_data.get("active_macro_key")
+        macro_name = ZONE_NAME_MAP.get(macro_key, "Custom/ Unspecified")
+
+        micro_key = context.user_data.get("active_micro_key")
+        if micro_key == "spot_custom_input":
+            micro_name = context.user_data.get("custom_spot_text", "Custom Location")
+        else:
+            micro_name = micro_key.replace("spot_", "").replace("_", " ").title() if micro_key else "Anywhere"
+
+        now = datetime.now(timezone.utc)
+
+        # Build the database payload for 'lost_ticket'
+        ticket_payload = {
+            "telegramChatId": chat_id,
+            "category": context.user_data.get("active_category_key", "cat_others").replace("cat_", ""),
+            "keywords": keyword,
+            "macroLocation": macro_name,
+            "microLocation": micro_name,
+            "Status": "active",
+            "timestamp": now,
+            "expireAt": now + timedelta(days = 14)
+        }
+
+        # Save ticket to the 'lost_ticket'
+        database.add_lost_ticket(ticket_payload)
+
+        success_text = (
+            f"🎟️ <b>Lost Search Ticket Active!</b>\n\n"
+            f"We are now monitoring the database for the keyword: <b>{keyword}</b>\n"
+            f"If a finder uploads an item matching this description, we will instantly notify you here.\n\n"
+            f"🔗 <b>Click to open the live map dashboard:</b>\n{config.WEB_APP_BASE_URL}"
+        )
+        
+        context.user_data.clear()
+        await update.message.reply_text(text = success_text, parse_mode = "HTML")
+
+    # 4. User is at the item description question
     elif curr_state == "AWAITING_DESCRIPTION":
         chat_id = update.effective_user.id
         username = update.effective_user.username
@@ -669,7 +739,7 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
         "cloudinaryPublicId": user_data.get("temp_public_id"),
 
         # Item Status
-        "Status": "active",
+        "Status": "spotted" if user_flow == "spotted" else "active",
     }
     # Establish connection to Firebase and look for 'listings'
     success = database.add_item_listing(payload)
