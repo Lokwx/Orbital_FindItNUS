@@ -219,6 +219,76 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         parse_mode = "HTML"
     )
 
+async def website(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Handler for /website command.
+    Provides a direct, clickable link to launch the web map.
+    """
+    context.user_data.clear()
+
+    # Create the button
+    keyboard = [
+        [InlineKeyboardButton(text = "🗺️ Open Live Map Portal", web_app = WebAppInfo(url = WEB_APP_BASE_URL))]
+    ]
+
+    text = (
+        f"🌐 <b>FindItNUS Interactive Map Portal</b>\n\n"
+        f"Tap the button below to launch the live campus map:"
+    )
+
+    await update.message.reply_text(
+        text=text, 
+        reply_markup=InlineKeyboardMarkup(keyboard), 
+        parse_mode="HTML"
+    )
+
+async def manage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """
+    Handler for /manage command.
+    Fetches the user's active/reclaimed items from database and displays them so that user can manage the item's status.
+    """
+    context.user_data.clear()
+    chat_id = update.effective_chat.id
+
+    # Fetch the user's listings using a function in database.py
+    user_listings = database.get_user_listings(chat_id)
+
+    # If they have no listings
+    if not user_listings:
+        await update.message.reply_text("🗄️ You have no active or spotted items registered under your account.")
+        return
+
+    # If they have listings
+    text_output = "📋 <b>Your Item History Portfolio:</b>\n\nSelect a listing below to manage it:\n"
+    manage_keyboard = []
+
+    # Look through database 
+    for idx, doc in enumerate(user_listings, 1):
+        data = doc.to_dict()
+
+        if data.get("Status") == "active":
+            status_flag = "🟢 Active"
+        elif data.get("Status") == "spotted":
+            status_flag = "🟡 Spotted"
+        else:
+            status_flag = "✅ Reclaimed"
+
+        # Write a short preview of each listing
+        description = data.get("ItemDescription", "No Description")[:25] + "..."
+        micro = data.get("ItemLocationDetail", "Unknown Location")
+
+        # Add to text_output
+        text_output += f"{idx}. <b>{description}</b> ({status_flag}) ➔ 📍 <i>{micro}</i>\n"
+
+        manage_keyboard.append([InlineKeyboardButton(f"⚙️ Manage Item {idx}", callback_data = f"mng_select_{doc.id}")])
+    manage_keyboard.append([InlineKeyboardButton("❌ Close Menu", callback_data = "action_cancel")])
+
+    await update.message.reply_text(
+        text = text_output,
+        reply_markup = InlineKeyboardMarkup(manage_keyboard),
+        parse_mode = "HTML"
+    )
+
 async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handles the button clicks to route user interactions accordingly.
@@ -305,7 +375,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
         context.user_data["state"] = "AWAITING_ITEM_NAME"
 
         await query.edit_message_text(
-            text = "What is the item's name?",
+            text = "<b>Give this item a short title?</b> (Example: Black iPhone 15)",
             reply_markup = None,
             parse_mode = "HTML"
         )
@@ -334,6 +404,56 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
             text = "<b>❌ Session Aborted.</b>\n\nIf you wish to submit another report, please type or click /start.",
             reply_markup = None,
             parse_mode = "HTML"
+        )
+
+    # Handles /manage 
+    elif data.startswith("mng_select_"):
+        doc_id = data.replace("mng_select_", "")
+
+        keyboard = [
+            [InlineKeyboardButton("✅ Mark as Reclaimed", callback_data = f"mng_reclaim_{doc_id}")],
+            [InlineKeyboardButton("🗑️ Delete Entirely", callback_data = f"mng_delete_{doc_id}")],
+            [InlineKeyboardButton("⬅️ Back to Portfolio", callback_data = "mng_back")]
+        ]
+
+        await query.edit_message_text(
+            text = "⚙️ <b>Manage Listing</b>\n\nWhat would you like to do with this item?",
+            reply_markup = InlineKeyboardMarkup(keyboard),
+            parse_mode = "HTML"
+        )
+
+    # Handles 'Mark as Reclaimed' Button
+    elif data.startswith("mng_reclaim_"):
+        doc_id = data.replace("mng_reclaim_", "")
+
+        # Connect to database.py to update it
+        success = database.update_listing_status(doc_id, "reclaimed")
+
+        if success:
+            text = "✅ <b>Item Marked as Reclaimed!</b>\n\nThe map pin has been updated. Type /manage to view your portfolio."
+        else:
+            text = "❌ <b>Database Error:</b> Could not update the listing."
+
+        await query.edit_message_text(text = text, parse_mode = "HTML")
+
+    # Handles 'Delete Entirely' button
+    elif data.startswith("mng_delete_"):
+        doc_id = data.replace("mng_delete_", "")
+
+        success = database.delete_listing(doc_id)
+
+        if success:
+            text = "🗑️ <b>Listing Deleted!</b>\n\nThe item has been permanently removed from the map. Type /manage to view your portfolio."
+        else:
+            text = "❌ <b>Database Error:</b> Could not delete the listing."
+            
+        await query.edit_message_text(text=text, parse_mode="HTML")
+
+    # Handles 'Back to Portfolio' button
+    elif data == "mng_back":
+        await query.edit_message_text(
+            text="🔙 <b>Menu Closed</b>\n\nPlease type /manage to reload your active listings.",
+            parse_mode="HTML"
         )
 
 async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -374,8 +494,8 @@ async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE
             await update.message.reply_text(
                 text = (
                     f"<b>{prefix} Mode</b> ➔ <b>Image Saved Successfully!</b> ✅\n\n"
-                    f"<b>✍️ Please type a short description of the item you {action}.</b>\n"
-                    f"Example: {example} a black iPhone at COM1 basement study area"
+                    f"<b>✍️ Please provide any extra information on the item you {action}.</b>\n"
+                    f"Example: {example} it at COM1 basement study area"
                 ),
                     parse_mode = "HTML"
             )
@@ -502,7 +622,6 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
 
     now = datetime.now(timezone.utc)
     
-
     # Build the database payload dictionary
     payload = {
         # Particulars
@@ -549,6 +668,8 @@ def main() -> None:
     app = Application.builder().token(TELEGRAM_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("website", website))
+    app.add_handler(CommandHandler("manage", manage))
 
     app.add_handler(CallbackQueryHandler(handle_button_clicks))
 
