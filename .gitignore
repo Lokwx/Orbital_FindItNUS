@@ -4,3 +4,6 @@ serviceAccountKey.json
 
 /finditnus_backend/__pycache__/
 .vercel
+
+
+/finditnus_backend/seed_database.py

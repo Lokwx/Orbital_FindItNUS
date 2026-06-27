@@ -363,7 +363,7 @@ export default function LandingPage() {
                                     <span className="text-[12px] text-slate-950 text-center">
                                         {itemData.Day}/{itemData.Month}/{itemData.Year}
                                         <br />
-                                        {itemData.Hour}:{itemData.Minute}:{itemData.Second}
+                                        {String(itemData.Hour).padStart(2,'0')}:{String(itemData.Minute).padStart(2,'0')}:{String(itemData.Second).padStart(2,'0')}
                                     </span>
                                 </div>
                             </div>
