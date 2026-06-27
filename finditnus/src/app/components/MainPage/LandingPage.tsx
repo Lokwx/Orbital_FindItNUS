@@ -339,7 +339,7 @@ export default function LandingPage() {
                     return (
                         <div
                             key={itemData.id}
-                            className="flex w-full min-w-0 items-center overflow-y-auto pr-1 border border-slate-100"
+                            className="flex w-full min-w-0 items-center overflow-hidden pr-1 border border-slate-100"
                         >
                             <div className="flex items-center justify-between shrink-0">
                                 <div className="flex items-center justify-center px-2 py-1 m-2">
@@ -348,16 +348,16 @@ export default function LandingPage() {
                             </div>
                             <div className="flex min-w-0 flex-1 flex-col items-start justify-center mx-1 my-1">
                                 <div className="flex flex-col w-full min-w-0 justify-between items-start leading-tight">
-                                    <span className="mb-0.5">
+                                    <div className="mb-0.5 w-full min-w-0">
                                         <h1 className="w-full truncate font-semibold tracking-tight">{itemData.ItemName}</h1>
-                                        <h2 className="w-full truncate text-[14px] text-slate-800 tracking-tight">
+                                        <h2 className="min-w-0 w-full truncate text-[14px] text-slate-800 tracking-tight">
                                             {itemData.ItemLocation}, {itemData.ItemLocationDetail}
                                         </h2>
-                                    </span>
+                                    </div>
                                     <h3 className="w-full text-[12px] text-black line-clamp-2 tracking-tight">💬 {itemData.ItemDescription}</h3>
                                 </div>
                             </div>
-                            <div className="flex flex-col items-center gap-2">
+                            <div className="flex shrink-0 flex-col items-center gap-2">
                                 <div className="flex items-center justify-center gap-1">
                                     <ClockFading className="size-4 stroke-2 mx-1 text-red-500" />
                                     <span className="text-[12px] text-slate-950 text-center">
@@ -367,7 +367,7 @@ export default function LandingPage() {
                                     </span>
                                 </div>
                             </div>
-                            <div className="flex items-center">
+                            <div className="flex shrink-0 items-center">
                                 <Link
                                     href={`/Saved?location=NUS&id=${itemData.id}&latitude=${itemData.Latitude}&longitude=${itemData.Longitude}`}
                                     className="pr-2 pl-1 py-4"
