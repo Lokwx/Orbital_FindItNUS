@@ -200,7 +200,7 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
         const diffDays = (currentDate.getTime() - itemDate.getTime())/millisecondsPerDay ;
         if (dateFilter === 'Today') return diffDays === 0;
         if (dateFilter === 'Yesterday') return diffDays === 1;
-        if (dateFilter === 'Last Week') return diffDays >= 0 && diffDays <= 7;
+        if (dateFilter === 'Last Week') return diffDays > 7;
     })
 
     useEffect(() => {
@@ -314,7 +314,7 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                                         <div>
                                             <h1 className="text-xs text-slate-500">Reported At</h1>
                                             <h2 className="font-semibold font-sm">
-                                                {itemData.Day}/{itemData.Month}/{itemData.Year} {itemData.Hour}:{itemData.Minute}:{itemData.Second}
+                                                {itemData.Day}/{itemData.Month}/{itemData.Year} {String(itemData.Hour).padStart(2,'0')}:{String(itemData.Minute).padStart(2,'0')}:{String(itemData.Second).padStart(2,'0')}
                                             </h2>
                                         </div>
                                     </section>
