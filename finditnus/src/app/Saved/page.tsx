@@ -277,29 +277,20 @@ function SavedPageContent() {
 
             {listingsPanel ? (
                 <section className="absolute top-2/5 right-3 left-3 bottom-2 bg-slate-50 z-10 flex flex-col pr-2 pt-1 rounded-xl">
-                    {filteredItems.length == 0 ? (
-                        <></>
-                    ) : filteredItems.length == 0 ? (
-                        <section className="absolute w-full z-10 mt-1 flex flex-col bg-slate-50 rounded-xl">
-                            <header className="flex items-center justify-between px-4 py-4 rounded-sm border-b border-slate-300">
-                                <span className="font-semibold text-sm leading-none text-gray-500 tracking-tight">FOUND LISTINGS</span>
-                                <span className="text-sm font-semibold leading-none text-indigo-600">{filteredItems.length}</span>
-                            </header>
-                        </section>
-                    ) : (
-                        <section className="absolute w-full z-10 mt-1 flex flex-col bg-slate-50 rounded-xl">
-                            <header className="flex items-center justify-between px-4 py-4 rounded-sm border-b border-slate-300">
-                                <span className="font-semibold text-sm leading-none text-gray-500 tracking-tight">FOUND LISTINGS</span>
-                                <span className="text-sm font-semibold leading-none text-indigo-600">{filteredItems.length}</span>
-                            </header>
-                        </section>
-                    )}
-                    <section className="flex flex-col mt-12">
+                    
+                    <section className="absolute w-full z-10 mt-1 flex flex-col bg-slate-50 rounded-xl">
+                        <header className="flex items-center justify-between px-4 py-4 rounded-sm border-b border-slate-300">
+                            <span className="font-semibold text-sm leading-none text-gray-500 tracking-tight">ALL LISTINGS</span>
+                            <span className="text-sm font-semibold leading-none text-indigo-600">{filteredItems.length}</span>
+                        </header>
+                    </section>
+
+                    <section className="flex flex-col mt-12 pl-2 min-h-0 overflow-y-auto">
                         {filteredItems.map((itemData) => {
                             return (
                                 <div
                                     key={itemData.id}
-                                    className="flex items-center overflow-y-auto my-1 mx-2"
+                                    className="flex items-center my-1 mx-2"
                                 >
                                     <div className="flex items-center justify-between">
                                         {itemData.ReportType == 'lost' ? (
