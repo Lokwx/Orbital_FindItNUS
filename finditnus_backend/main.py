@@ -727,7 +727,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             await update.message.reply_text("❌ Failed to relay the message. Please try again.")
         return
 
-    # 1. User is at the custom location description question
+    # 2. User is at the custom location description question
     if curr_state == "AWAITING_CUSTOM_SPOT":
         custom_text = update.message.text.strip()
         context.user_data["custom_spot_text"] = custom_text
@@ -741,7 +741,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             parse_mode = "HTML"
         )
 
-    # 2. User is at the item name question
+    # 3. User is at the item name question
     elif curr_state == "AWAITING_ITEM_NAME":
         context.user_data["item_name"] = update.message.text.strip()
 
@@ -767,7 +767,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 parse_mode = "HTML"
             )
     
-    # 3. User is at the Lost Item Keyword question 
+    # 4. User is at the Lost Item Keyword question 
     elif curr_state == "AWAITING_KEYWORD" and user_flow == "loser":
         keyword = update.message.text.strip().lower()
         chat_id = update.effective_chat.id
@@ -808,7 +808,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
         context.user_data.clear()
         await update.message.reply_text(text = success_text, parse_mode = "HTML")
 
-    # 4. User is at the item description question
+    # 5. User is at the item description question
     elif curr_state == "AWAITING_DESCRIPTION":
         chat_id = update.effective_user.id
         username = update.effective_user.username
@@ -816,27 +816,40 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
         user_flow = context.user_data.get("user_flow")
 
         try:
-            # Pass the saved parameters to the database function
-            database_saver(context.user_data, chat_id, username, description_text)
+            match_alerts = database_saver(context.user_data, chat_id, username, description_text)
 
-            # Send status update to user
             prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
             await update.message.reply_text(
                 text = (
-                    f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉\n\n"
+                    f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉"
                     "Thank you! Your listing has been saved successfully!\n"
                     "Students can access this on the map now."
                 ),
                 parse_mode = "HTML"
             )
-            # Clear the current saved parameters in the chat
             context.user_data.clear()
+
+            for alert in match_alerts:
+                try:
+                    await context.bot.send_message(
+                        chat_id = alert["chat_id"],
+                        text = (
+                            f"🔔 <b>FindItNUS Match Alert!</b>\n\n"
+                            f"A finder just reported an item matching your open search tracking filters:\n"
+                            f"📍 <b>Found At:</b> {alert['micro_name']} ({alert['macro_name']})\n"
+                            f"📝 <b>Details:</b> {description_text.strip()}\n\n"
+                            f"🔗 <b>View your matching pin live on the Campus Map:</b>\n{alert['view_url']}"
+                        ),
+                        parse_mode="HTML"
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to send match alert: {e}")
         
         except Exception as e:
             logger.error(f"Posting failure: {e}")
             await update.message.reply_text("Failed to publish listing. Try again!")
 
-def database_saver(user_data: dict, chat_id: int, username: str, description_text: str) -> None:
+def database_saver(user_data: dict, chat_id: int, username: str, description_text: str) -> list:
     """
     Process chat parameters and package it for database upload
     """
@@ -907,6 +920,51 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
 
     if not success:
         raise RuntimeError("Database is offline!")
+
+    # Matchmaking Portion
+    matches_found = []
+    try:
+        if database.db is None:
+            database.initialize_database()
+
+        tickets_ref = database.db.collection("lost_tickets")\
+            .where("Status", "==", "active")\
+            .stream()
+        
+        notified_losers = set()
+
+        for ticket_doc in tickets_ref:
+            ticket_data = ticket_doc.to_dict()
+            ticket_keyword = ticket_data.get("keywords", "").lower().strip()
+            loser_chat = ticket_data.get("telegramChatId")
+            ticket_macro = ticket_data.get("macroLocation", "Entire Campus")
+
+            # Check if the found item's location matches loser's search zone
+            if ticket_macro in [macro_name, "Entire Campus"]:
+                if loser_chat and loser_chat not in notified_losers:
+                    keyword_words = ticket_keyword.split()
+
+                    # Check if the loser's keywords exist in the found item's description
+                    if keyword_words and all(word in description_text.lower() for word in keyword_words):
+                        if ticket_macro == "Entire Campus":
+                            view_url = f"{config.WEB_APP_BASE_URL}?keyword={ticket_keyword}"
+                        else:
+                            macro_url_name = macro_name.lower().replace(" ", "_")
+                            view_url = f"{config.WEB_APP_BASE_URL}?zone=zone_{macro_url_name}&keyword={ticket_keyword}"
+
+                        matches_found.append({
+                            "chat_id": loser_chat,
+                            "micro_name": micro_name,
+                            "macro_name": macro_name,
+                            "view_url": view_url
+                        })
+
+                        notified_losers.add(loser_chat)
+    
+    except Exception as match_err:
+        logger.error(f"Matchmaking error: {match_err}")
+
+    return matches_found
 
 def main() -> None:
     # Initilize Telegram framework using the necessary config details
