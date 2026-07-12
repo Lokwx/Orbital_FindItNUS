@@ -16,7 +16,8 @@ import Image from 'next/image';
 
 import { getAllItemData } from '@/Firebase';
 
-const latOffset = 0.006;
+const latOffset = 0.007;
+const longOffset = -0.00023;
 
 const pinIcon = L.divIcon({
     html: `
@@ -150,7 +151,7 @@ const UpdateMapPosition = ({ position }: { position: [number, number] }) => {
 
     useEffect(() => {
         const updatedLat = position[0] + latOffset;
-        const updatedLong = position[1];
+        const updatedLong = position[1] + longOffset;
         map.setView([updatedLat,updatedLong],16);
     }, [map, position]);
 
