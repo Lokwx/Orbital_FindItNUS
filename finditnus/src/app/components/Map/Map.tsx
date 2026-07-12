@@ -22,7 +22,7 @@ const pinIcon = L.divIcon({
     html: `
         <img
             src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Map_Pin.svg"
-            style="width:22px;height:28px;"
+            style="width:22px;height:28px;opacity:0.80"
         />
     `,
     iconSize: [36, 36],
@@ -261,6 +261,7 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                             }}
                             position={selectedMarkerPosition}
                             icon={id === itemData.id ? selectedIcon : pinIcon}
+                            zIndexOffset={id === itemData.id ? 1000 : 0}
                             eventHandlers={{
                                 click: () => {
                                     setMapPosition(selectedMarkerPosition);
