@@ -205,20 +205,28 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
 
     useEffect(() => {
         setFilteredItems?.(filteredItems);
-    },[filteredItems,setFilteredItems]);
+    }, [filteredItems, setFilteredItems]);
 
-    const [mapPosition, setMapPosition] = useState<[number, number]>(position)
+    const [mapPosition, setMapPosition] = useState<[number, number]>(position);
     const markerRefs = useRef<Record<string, L.Marker | null>>({});
 
     useEffect(() => {
         if (id == null) return;
 
-        const timeoutId = window.setTimeout(() => {
-            markerRefs.current[id]?.openPopup();
-        }, 0);
+        const selectedItem = items.find((item) => item.id === id);
+        const selectedLatitude = selectedItem?.Latitude ?? latitude;
+        const selectedLongitude = selectedItem?.Longitude ?? longitude;
 
-        return () => window.clearTimeout(timeoutId);
-    }, [id, filteredItems]);
+        const frameId = window.requestAnimationFrame(() => {
+            if (selectedLatitude != null && selectedLongitude != null) {
+                setMapPosition([selectedLatitude, selectedLongitude]);
+            }
+
+            markerRefs.current[id]?.openPopup();
+        });
+
+        return () => window.cancelAnimationFrame(frameId);
+    }, [id, items, latitude, longitude]);
 
     return (
         <section className="relative flex h-full w-full">

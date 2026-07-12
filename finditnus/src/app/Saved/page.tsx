@@ -298,7 +298,7 @@ function SavedPageContent() {
                                         setSelectedItemId(itemData.id);
                                         setListingsPanel(false);
                                     }}
-                                    className="flex text-left items-center my-1 mx-2 border border-slate-200 rounded-2xl shadow-xs"
+                                    className="flex w-full text-left items-center my-1 mx-2 border border-slate-200 rounded-2xl shadow-xs"
                                 >
                                     <div className="flex items-center justify-between">
                                         {itemData.ReportType == 'lost' ? (
