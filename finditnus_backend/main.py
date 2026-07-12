@@ -224,7 +224,7 @@ def run_deletion() -> None:
             logger.info("Initializing TTL deletion")
 
             expired_listings = database.db.collection("listings")\
-                .where("expireAt", "<=", now).stream()\
+                .where("expireAt", "<=", now)\
                 .stream()
             
             for doc in expired_listings:
@@ -864,7 +864,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
             await update.message.reply_text(
                 text = (
-                    f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉"
+                    f"<b>{prefix} Mode</b> ➔ <b>Listing Published Live!</b> 🎉\n\n"
                     "Thank you! Your listing has been saved successfully!\n"
                     "Students can access this on the map now."
                 ),
