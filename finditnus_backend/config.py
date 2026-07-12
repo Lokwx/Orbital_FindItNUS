@@ -30,4 +30,4 @@ IS_LOCAL_DEVELOPMENT = Path(ROOT_DIR / ".local_dev").exists()
 if IS_LOCAL_DEVELOPMENT:
     WEB_APP_BASE_URL = "https://finditnus.vercel.app/"  
 else:
-    WEB_APP_BASE_URL = ""
+    WEB_APP_BASE_URL = "https://finditnus.vercel.app/"  
