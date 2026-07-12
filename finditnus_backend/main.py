@@ -386,6 +386,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     query = update.callback_query
     await query.answer()
     data = query.data
+    chat_id = update.effective_chat.id
 
     user_flow = context.user_data.get("user_flow", "info")
 
@@ -581,6 +582,53 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
             parse_mode="HTML"
         )
 
+    # Handles 'Approve' button for handshake
+    elif data.startswith("hs_approve_"):
+        parts = data.split("_")
+        doc_id = parts[2]
+        loser_chat_id = int(parts[3]) if len(parts) > 3 else None
+
+        success = database.update_listing_status(doc_id, "reclaimed")
+
+        if success and loser_chat_id:
+            try:
+                if database.db is None:
+                    database.initialize_database()
+
+                active_tickets = database.db.collection("lost_tickets")\
+                    .where("telegramChatId", "==", loser_chat_id)\
+                    .where("Status", "==", "active")\
+                    .stream()
+                for ticket in active_tickets:
+                    database.db.collection("lost_tickets").document(ticket.id).update({"Status": "resolved"})
+            except Exception as e:
+                logger.error(f"Error: {e}")
+
+        await query.edit_message_text(
+            text = "✅ <b>Handshake Closed Successfully.</b>\n\nThe item has been marked as reclaimed.",
+            parse_mode = "HTML"
+        )
+
+    # Handles 'Reject' button for handshake
+    elif data.startswith("hs_reject_"):
+        await query.edit_message_text(
+            text = "❌ <b>Handshake Rejected.</b>\n\nThe item remains active on the map.",
+            parse_mode = "HTML"
+        )
+    
+    # Handles 'Message Relay' button for handshake
+    elif data.startswith("msg_relay_prompt_"):
+        loser_chat_id = data.replace("msg_relay_prompt_", "")
+
+        context.user_data["state"] = "AWAITING_RELAY_MSG"
+        context.user_data["relay_target_chat_id"] = loser_chat_id
+
+        await context.bot.send_message(
+            chat_id = chat_id,
+            text = "📝 <b>Anonymous Relay Chat Active</b>\n\nPlease type the coordination message (e.g., meetup time/place) you want to forward to the claimant:",
+            parse_mode = "HTML"
+        )
+
 async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Saves the image uploaded by Finder and uploads it to Cloudinary
@@ -654,6 +702,30 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
         prefix = "🟡 Spotter"
     else:
         prefix = "🔵 Loser"
+
+    # 1. User is at the relay message question
+    if curr_state == "AWAITING_RELAY_MSG":
+        relay_text = update.message.text
+        target_loser_id = int(context.user_data.get("relay_target_chat_id"))
+
+        try:
+            await context.bot.send_message(
+                chat_id = target_loser_id,
+                text = (
+                    f"💬 <b>Message from the Finder!</b>\n\n"
+                    f"The finder of your item has sent you a coordination message:\n"
+                    f"✉️ <i>\"{relay_text}\"</i>\n\n"
+                    f"Please respond or arrange to meet up directly."
+                ),
+                parse_mode="HTML"
+            )
+            context.user_data.clear()
+            await update.message.reply_text("✅ <b>Message Relayed!</b> Your text has been delivered to the claimant.", parse_mode = "HTML")
+
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            await update.message.reply_text("❌ Failed to relay the message. Please try again.")
+        return
 
     # 1. User is at the custom location description question
     if curr_state == "AWAITING_CUSTOM_SPOT":
