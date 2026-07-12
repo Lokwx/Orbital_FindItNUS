@@ -210,6 +210,49 @@ def run_health_check():
     server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
     server.serve_forever()
 
+def run_deletion() -> None:
+    """
+    Wakes up periodically to remove expired listings from Firestore and Cloudinary. 
+    Acts as our TTL since Firestore TTL needs paid subscription.
+    """
+    while True:
+        try:
+            if database.db is None:
+                database.initialize_database()
+            
+            now = datetime.now(timezone.utc)
+            logger.info("Initializing TTL deletion")
+
+            expired_listings = database.db.collection("listings")\
+                .where("expireAt", "<=", now).stream()\
+                .stream()
+            
+            for doc in expired_listings:
+                data = doc.to_dict()
+                public_id = data.get("cloudinaryPublicId")
+
+                if public_id:
+                    try:
+                        storage.delete_image(public_id)
+                    except Exception as e:
+                        logger.error(f"Failed to delete image {public_id}: {e}")
+
+                database.db.collection("listings").document(doc.id).delete()
+                logger.info(f"Deleted expired listing {doc.id}")
+            
+            expired_tickets = database.db.collection("lost_tickets")\
+                .where("expireAt", "<=", now)\
+                .stream()
+            
+            for doc in expired_tickets:
+                database.db.collection("lost_tickets").document(doc.id).delete()
+                logger.info(f"Deleted expired lost ticket {doc.id}")
+        
+        except Exception as e:
+            logger.error(f"Error during TTL deletion: {e}")
+
+        time.sleep(86400)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handler for /start command. 
@@ -981,6 +1024,8 @@ def main() -> None:
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_inputs))
 
     threading.Thread(target = run_health_check, daemon = True).start()
+    threading.Thread(target = run_deletion, daemon = True).start()
+    
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
     app.run_polling()
