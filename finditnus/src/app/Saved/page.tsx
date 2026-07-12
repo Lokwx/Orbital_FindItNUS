@@ -1,6 +1,6 @@
 'use client';
 
-import { Tag, CalendarDays, List, ChevronDown, MapPinX, MapPinCheck, MapPinSearch } from 'lucide-react';
+import { Tag, CalendarDays, List, ChevronDown, MapPinX, MapPinCheck, MapPinSearch, ChevronRight } from 'lucide-react';
 
 import { Divider } from '@mui/material';
 
@@ -339,6 +339,7 @@ function SavedPageContent() {
                                             </div>
                                         )}
                                     </div>
+                                    <ChevronRight className="mr-2 size-5 shrink-0 text-slate-400" />
                                 </button>
                             );
                         })}
