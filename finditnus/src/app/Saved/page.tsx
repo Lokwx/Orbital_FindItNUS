@@ -295,7 +295,11 @@ function SavedPageContent() {
                                     type="button"
                                     onClick={() => {
                                         if (itemData.id == null) return;
-                                        setSelectedItemId(itemData.id);
+                                         setSelectedItemId(undefined);
+
+                                         window.setTimeout(() => {
+                                             setSelectedItemId(itemData.id);
+                                         }, 0);
                                         setListingsPanel(false);
                                     }}
                                     className="flex w-full text-left items-center my-1 mx-2 border border-slate-200 rounded-2xl shadow-xs"

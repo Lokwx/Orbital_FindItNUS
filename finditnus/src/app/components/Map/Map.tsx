@@ -222,7 +222,11 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                 setMapPosition([selectedLatitude, selectedLongitude]);
             }
 
-            markerRefs.current[id]?.openPopup();
+            const popupFrameId = window.requestAnimationFrame(() => {
+                markerRefs.current[id]?.openPopup();
+            });
+
+            return () => window.cancelAnimationFrame(popupFrameId);
         });
 
         return () => window.cancelAnimationFrame(frameId);
