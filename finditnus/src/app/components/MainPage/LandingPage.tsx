@@ -12,7 +12,7 @@ import FindItNUSHeader from '@/app/components/Header/FindItNUSHeader';
 import BotLinkButton from '@/app/components/TelegramBot/BotLinkButton';
 import ButtonToMap from '@/app/components/Map/ButtonToMap';
 
-import { getRecentItemData } from '@/Firebase';
+import { getAllItemData, getRecentItemData } from '@/Firebase';
 
 const RECENT_QUERIES = 50;
 
@@ -50,11 +50,14 @@ export default function LandingPage() {
     const [searchInput, setSearchInput] = useState('');
 
     const [itemData, setItems] = useState<Item[]>([]);
+    const [recentItemData, setRecentItems] = useState<Item[]>([]);
 
     useEffect(() => {
         const loadRecentItems = async () => {
+            const allItems = await getAllItemData();
             const recentItems = await getRecentItemData(RECENT_QUERIES);
-            setItems(recentItems);
+            setItems(allItems);
+            setRecentItems(recentItems);
         };
         loadRecentItems();
     }, []);
@@ -67,7 +70,7 @@ export default function LandingPage() {
         return item.ItemName?.toLowerCase().includes(search) || item.ItemCategory?.toLowerCase().includes(search) || item.ItemDescription?.toLowerCase().includes(search) || item.ItemLocation?.toLowerCase().includes(search) || item.ItemLocationDetail?.toLowerCase().includes(search);
     });
 
-    const foundItems = itemData.filter((item) => {
+    const foundItems = recentItemData.filter((item) => {
         return item.ReportType?.toLowerCase().includes('found')
     })
 
