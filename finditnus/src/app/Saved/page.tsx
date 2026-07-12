@@ -287,7 +287,7 @@ function SavedPageContent() {
                         </header>
                     </section>
 
-                    <section className="flex flex-col mt-12 pl-2 min-h-0 overflow-y-auto">
+                    <section className="flex flex-col mt-12 pl-2 min-h-0 overflow-y-auto overflow-x-hidden">
                         {filteredItems.map((itemData) => {
                             return (
                                 <button
@@ -302,7 +302,7 @@ function SavedPageContent() {
                                          }, 0);
                                         setListingsPanel(false);
                                     }}
-                                    className="flex w-full text-left items-center my-1 mx-2 border border-slate-200 rounded-2xl shadow-xs"
+                                    className="flex text-left items-center my-1 mx-2 border border-slate-200 rounded-2xl shadow-xs"
                                 >
                                     <div className="flex items-center justify-between">
                                         {itemData.ReportType == 'lost' ? (
