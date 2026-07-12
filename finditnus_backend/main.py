@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 
 # Fetch Telegram Bot token and Web App URL from config.py
 TELEGRAM_TOKEN = config.TELEGRAM_TOKEN
+if os.environ.get("WEB_APP_BASE_URL"):
+    config.WEB_APP_BASE_URL = os.environ.get("WEB_APP_BASE_URL")
+
 WEB_APP_BASE_URL = config.WEB_APP_BASE_URL
 
 # Store campus locations 
@@ -192,12 +195,144 @@ def get_coordinates(location_key: str, apply_jitter: bool = False) -> tuple:
         long_jitter = random.uniform(-0.00010, 0.00010)
         return (base_coords[0] + lat_jitter, base_coords[1] + long_jitter)
 
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    """
+    Used to allow Render to ping the bot so it is running at all times.
+    """
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(b"FindItNUS Bot is running!")
+
+    def log_message(self, format, *args):
+        return 
+
+def run_health_check():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    server.serve_forever()
+
+def run_deletion() -> None:
+    """
+    Wakes up periodically to remove expired listings from Firestore and Cloudinary. 
+    Acts as our TTL since Firestore TTL needs paid subscription.
+    """
+    while True:
+        try:
+            if database.db is None:
+                database.initialize_database()
+            
+            now = datetime.now(timezone.utc)
+            logger.info("Initializing TTL deletion")
+
+            expired_listings = database.db.collection("listings")\
+                .where("expireAt", "<=", now)\
+                .stream()
+            
+            for doc in expired_listings:
+                data = doc.to_dict()
+                public_id = data.get("cloudinaryPublicId")
+
+                if public_id:
+                    try:
+                        storage.delete_image(public_id)
+                    except Exception as e:
+                        logger.error(f"Failed to delete image {public_id}: {e}")
+
+                database.db.collection("listings").document(doc.id).delete()
+                logger.info(f"Deleted expired listing {doc.id}")
+            
+            expired_tickets = database.db.collection("lost_tickets")\
+                .where("expireAt", "<=", now)\
+                .stream()
+            
+            for doc in expired_tickets:
+                database.db.collection("lost_tickets").document(doc.id).delete()
+                logger.info(f"Deleted expired lost ticket {doc.id}")
+        
+        except Exception as e:
+            logger.error(f"Error during TTL deletion: {e}")
+
+        time.sleep(86400)
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handler for /start command. 
     """
     context.user_data.clear()  
+    chat_id = update.effective_chat.id
 
+    # If user claimed item from the web map and wants to open a chat
+    if context.args and context.args[0].startswith("claim_"):
+        try:
+            parts = context.args[0].split("_")
+            target_doc_id = parts[1]
+            loser_chat_id = update.effective_chat.id
+            loser_user = update.effective_user
+
+            if loser_user.username:
+                loser_mention = f"@{loser_user.username}"
+                privacy_notice = ""
+            else:
+                full_name = loser_user.first_name
+                if loser_user.last_name:
+                    full_name += f" {loser_user.last_name}"
+                loser_mention = f"<b>{full_name}</b>"
+                privacy_notice = "\n\n⚠️ <b>Privacy Notice:</b> This user does not have a public Telegram username. Use the button below to talk to them!"
+            
+            if database.db is None:
+                database.initialize_database()
+
+            doc_ref = database.db.collection("listings").document(target_doc_id).get()
+            if not doc_ref.exists:
+                await update.message.reply_text("❌ This item listing does not exist")
+                return
+
+            listing_data = doc_ref.to_dict()
+            finder_chat_id = listing_data.get("UserID")
+            item_desc = listing_data.get("ItemDescription", "Unknown Item")
+
+            if not finder_chat_id:
+                await update.message.reply_text("❌ This item listing does not have a valid Finder ID")
+                return
+
+            handshake_keyboard = [
+                [
+                    InlineKeyboardButton("✅ Yes, Handed Over", callback_data=f"hs_approve_{target_doc_id}_{loser_chat_id}"),
+                    InlineKeyboardButton("❌ No / Fake Claim", callback_data=f"hs_reject_{target_doc_id}")
+                ],
+                [
+                    InlineKeyboardButton("💬 Message Claimant via Bot", callback_data=f"msg_relay_prompt_{loser_chat_id}")
+                ]
+            ]
+
+            await context.bot.send_message(
+                chat_id = finder_chat_id,
+                text = (
+                    f"🛎️ <b>Handshake Claim Notification!</b>\n\n"
+                    f"Student {loser_mention} is attempting to reclaim your found listing:\n"
+                    f"📦 <b>Item:</b> {item_desc}{privacy_notice}\n\n"
+                    f"Have you safely met up on campus and returned this item to them?"
+                ),
+                reply_markup = InlineKeyboardMarkup(handshake_keyboard),
+                parse_mode = "HTML"
+            )
+            
+            await update.message.reply_text(
+                "📬 <b>Claim Request Transmitted!</b>\n\n"
+                "We have pinged the finder to confirm the physical handoff. If they verify it, "
+                "your open lost tickets matching this space will resolve instantly.",
+                parse_mode = "HTML"
+            )
+            return
+            
+        except Exception as err:
+            logger.error(f"DParsing fault: {err}")
+            await update.message.reply_text("❌ Invalid verification.")
+            return
+
+    # Standard /start command
     first_name = update.effective_user.first_name
     welcome_message = (
         f"Hi {first_name}! 👋 Welcome to <b>FinditNUS</b> \n\n"
@@ -297,6 +432,7 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
     query = update.callback_query
     await query.answer()
     data = query.data
+    chat_id = update.effective_chat.id
 
     user_flow = context.user_data.get("user_flow", "info")
 
@@ -492,6 +628,53 @@ async def handle_button_clicks(update: Update, context: ContextTypes.DEFAULT_TYP
             parse_mode="HTML"
         )
 
+    # Handles 'Approve' button for handshake
+    elif data.startswith("hs_approve_"):
+        parts = data.split("_")
+        doc_id = parts[2]
+        loser_chat_id = int(parts[3]) if len(parts) > 3 else None
+
+        success = database.update_listing_status(doc_id, "reclaimed")
+
+        if success and loser_chat_id:
+            try:
+                if database.db is None:
+                    database.initialize_database()
+
+                active_tickets = database.db.collection("lost_tickets")\
+                    .where("telegramChatId", "==", loser_chat_id)\
+                    .where("Status", "==", "active")\
+                    .stream()
+                for ticket in active_tickets:
+                    database.db.collection("lost_tickets").document(ticket.id).update({"Status": "resolved"})
+            except Exception as e:
+                logger.error(f"Error: {e}")
+
+        await query.edit_message_text(
+            text = "✅ <b>Handshake Closed Successfully.</b>\n\nThe item has been marked as reclaimed.",
+            parse_mode = "HTML"
+        )
+
+    # Handles 'Reject' button for handshake
+    elif data.startswith("hs_reject_"):
+        await query.edit_message_text(
+            text = "❌ <b>Handshake Rejected.</b>\n\nThe item remains active on the map.",
+            parse_mode = "HTML"
+        )
+    
+    # Handles 'Message Relay' button for handshake
+    elif data.startswith("msg_relay_prompt_"):
+        loser_chat_id = data.replace("msg_relay_prompt_", "")
+
+        context.user_data["state"] = "AWAITING_RELAY_MSG"
+        context.user_data["relay_target_chat_id"] = loser_chat_id
+
+        await context.bot.send_message(
+            chat_id = chat_id,
+            text = "📝 <b>Anonymous Relay Chat Active</b>\n\nPlease type the coordination message (e.g., meetup time/place) you want to forward to the claimant:",
+            parse_mode = "HTML"
+        )
+
 async def handle_finder_photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Saves the image uploaded by Finder and uploads it to Cloudinary
@@ -566,7 +749,31 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
     else:
         prefix = "🔵 Loser"
 
-    # 1. User is at the custom location description question
+    # 1. User is at the relay message question
+    if curr_state == "AWAITING_RELAY_MSG":
+        relay_text = update.message.text
+        target_loser_id = int(context.user_data.get("relay_target_chat_id"))
+
+        try:
+            await context.bot.send_message(
+                chat_id = target_loser_id,
+                text = (
+                    f"💬 <b>Message from the Finder!</b>\n\n"
+                    f"The finder of your item has sent you a coordination message:\n"
+                    f"✉️ <i>\"{relay_text}\"</i>\n\n"
+                    f"Please respond or arrange to meet up directly."
+                ),
+                parse_mode="HTML"
+            )
+            context.user_data.clear()
+            await update.message.reply_text("✅ <b>Message Relayed!</b> Your text has been delivered to the claimant.", parse_mode = "HTML")
+
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            await update.message.reply_text("❌ Failed to relay the message. Please try again.")
+        return
+
+    # 2. User is at the custom location description question
     if curr_state == "AWAITING_CUSTOM_SPOT":
         custom_text = update.message.text.strip()
         context.user_data["custom_spot_text"] = custom_text
@@ -580,7 +787,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
             parse_mode = "HTML"
         )
 
-    # 2. User is at the item name question
+    # 3. User is at the item name question
     elif curr_state == "AWAITING_ITEM_NAME":
         context.user_data["item_name"] = update.message.text.strip()
 
@@ -606,7 +813,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 parse_mode = "HTML"
             )
     
-    # 3. User is at the Lost Item Keyword question 
+    # 4. User is at the Lost Item Keyword question 
     elif curr_state == "AWAITING_KEYWORD" and user_flow == "loser":
         keyword = update.message.text.strip().lower()
         chat_id = update.effective_chat.id
@@ -647,7 +854,7 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
         context.user_data.clear()
         await update.message.reply_text(text = success_text, parse_mode = "HTML")
 
-    # 4. User is at the item description question
+    # 5. User is at the item description question
     elif curr_state == "AWAITING_DESCRIPTION":
         chat_id = update.effective_user.id
         username = update.effective_user.username
@@ -655,10 +862,8 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
         user_flow = context.user_data.get("user_flow")
 
         try:
-            # Pass the saved parameters to the database function
-            database_saver(context.user_data, chat_id, username, description_text)
+            match_alerts = database_saver(context.user_data, chat_id, username, description_text)
 
-            # Send status update to user
             prefix = "🟢 Finder" if user_flow == "finder" else "🟡 Spotter"
             await update.message.reply_text(
                 text = (
@@ -668,14 +873,29 @@ async def handle_text_inputs(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 ),
                 parse_mode = "HTML"
             )
-            # Clear the current saved parameters in the chat
             context.user_data.clear()
+
+            for alert in match_alerts:
+                try:
+                    await context.bot.send_message(
+                        chat_id = alert["chat_id"],
+                        text = (
+                            f"🔔 <b>FindItNUS Match Alert!</b>\n\n"
+                            f"A finder just reported an item matching your open search tracking filters:\n"
+                            f"📍 <b>Found At:</b> {alert['micro_name']} ({alert['macro_name']})\n"
+                            f"📝 <b>Details:</b> {description_text.strip()}\n\n"
+                            f"🔗 <b>View your matching pin live on the Campus Map:</b>\n{alert['view_url']}"
+                        ),
+                        parse_mode="HTML"
+                    )
+                except Exception as e:
+                    logger.error(f"Failed to send match alert: {e}")
         
         except Exception as e:
             logger.error(f"Posting failure: {e}")
             await update.message.reply_text("Failed to publish listing. Try again!")
 
-def database_saver(user_data: dict, chat_id: int, username: str, description_text: str) -> None:
+def database_saver(user_data: dict, chat_id: int, username: str, description_text: str) -> list:
     """
     Process chat parameters and package it for database upload
     """
@@ -747,6 +967,51 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
     if not success:
         raise RuntimeError("Database is offline!")
 
+    # Matchmaking Portion
+    matches_found = []
+    try:
+        if database.db is None:
+            database.initialize_database()
+
+        tickets_ref = database.db.collection("lost_tickets")\
+            .where("Status", "==", "active")\
+            .stream()
+        
+        notified_losers = set()
+
+        for ticket_doc in tickets_ref:
+            ticket_data = ticket_doc.to_dict()
+            ticket_keyword = ticket_data.get("keywords", "").lower().strip()
+            loser_chat = ticket_data.get("telegramChatId")
+            ticket_macro = ticket_data.get("macroLocation", "Entire Campus")
+
+            # Check if the found item's location matches loser's search zone
+            if ticket_macro in [macro_name, "Entire Campus"]:
+                if loser_chat and loser_chat not in notified_losers:
+                    keyword_words = ticket_keyword.split()
+
+                    # Check if the loser's keywords exist in the found item's description
+                    if keyword_words and all(word in description_text.lower() for word in keyword_words):
+                        if ticket_macro == "Entire Campus":
+                            view_url = f"{config.WEB_APP_BASE_URL}?keyword={ticket_keyword}"
+                        else:
+                            macro_url_name = macro_name.lower().replace(" ", "_")
+                            view_url = f"{config.WEB_APP_BASE_URL}?zone=zone_{macro_url_name}&keyword={ticket_keyword}"
+
+                        matches_found.append({
+                            "chat_id": loser_chat,
+                            "micro_name": micro_name,
+                            "macro_name": macro_name,
+                            "view_url": view_url
+                        })
+
+                        notified_losers.add(loser_chat)
+    
+    except Exception as match_err:
+        logger.error(f"Matchmaking error: {match_err}")
+
+    return matches_found
+
 def main() -> None:
     # Initilize Telegram framework using the necessary config details
     app = Application.builder().token(TELEGRAM_TOKEN).build()
@@ -761,6 +1026,9 @@ def main() -> None:
 
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_inputs))
 
+    threading.Thread(target = run_health_check, daemon = True).start()
+    threading.Thread(target = run_deletion, daemon = True).start()
+    
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
     app.run_polling()
