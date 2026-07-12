@@ -45,8 +45,9 @@ type ClientMapProps = {
     categoryFilter?: string;
     listingsPanel: boolean;
     setFilteredItems?: (items:Item[]) => void;
+    setSelectedItemId?: (id: string | undefined) => void;
 }
 
-export default function ClientMap({location, id, latitude, longitude, dateFilter, categoryFilter, listingsPanel, setFilteredItems}:ClientMapProps) {
-    return <Map location={location} id={id} latitude={latitude} longitude={longitude} dateFilter={dateFilter} categoryFilter={categoryFilter} listingsPanel={listingsPanel} setFilteredItems={setFilteredItems}/>;
+export default function ClientMap({location, id, latitude, longitude, dateFilter, categoryFilter, listingsPanel, setFilteredItems, setSelectedItemId}:ClientMapProps) {
+    return <Map location={location} id={id} latitude={latitude} longitude={longitude} dateFilter={dateFilter} categoryFilter={categoryFilter} listingsPanel={listingsPanel} setFilteredItems={setFilteredItems} setSelectedItemId={setSelectedItemId}/>;
 }
