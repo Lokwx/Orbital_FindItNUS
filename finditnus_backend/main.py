@@ -192,12 +192,101 @@ def get_coordinates(location_key: str, apply_jitter: bool = False) -> tuple:
         long_jitter = random.uniform(-0.00010, 0.00010)
         return (base_coords[0] + lat_jitter, base_coords[1] + long_jitter)
 
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    """
+    Used to allow Render to ping the bot so it is running at all times.
+    """
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/html")
+        self.end_headers()
+        self.wfile.write(b"FindItNUS Bot is running!")
+
+    def log_message(self, format, *args):
+        return 
+
+def run_health_check():
+    port = int(os.environ.get("PORT", 10000))
+    server = HTTPServer(("0.0.0.0", port), HealthCheckHandler)
+    server.serve_forever()
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """
     Handler for /start command. 
     """
     context.user_data.clear()  
+    chat_id = update.effective_chat.id
 
+    # If user claimed item from the web map and wants to open a chat
+    if context.args and context.args[0].startswith("claim_"):
+        try:
+            parts = context.args[0].split("_")
+            target_doc_id = parts[1]
+            loser_chat_id = update.effective_chat.id
+            loser_user = update.effective_user
+
+            if loser_user.username:
+                loser_mention = f"@{loser_user.username}"
+                privacy_notice = ""
+            else:
+                full_name = loser_user.first_name
+                if loser_user.last_name:
+                    full_name += f" {loser_user.last_name}"
+                loser_mention = f"<b>{full_name}</b>"
+                privacy_notice = "\n\n⚠️ <b>Privacy Notice:</b> This user does not have a public Telegram username. Use the button below to talk to them!"
+            
+            if database.db is None:
+                database.initialize_database()
+
+            doc_ref = database.db.collection("listings").document(target_doc_id).get()
+            if not doc_ref.exists:
+                await update.message.reply_text("❌ This item listing does not exist")
+                return
+
+            listing_data = doc_ref.to_dict()
+            finder_chat_id = listing_data.get("UserID")
+            item_desc = listing_data.get("ItemDescription", "Unknown Item")
+
+            if not finder_chat_id:
+                await update.message.reply_text("❌ This item listing does not have a valid Finder ID")
+                return
+
+            handshake_keyboard = [
+                [
+                    InlineKeyboardButton("✅ Yes, Handed Over", callback_data=f"hs_approve_{target_doc_id}_{loser_chat_id}"),
+                    InlineKeyboardButton("❌ No / Fake Claim", callback_data=f"hs_reject_{target_doc_id}")
+                ],
+                [
+                    InlineKeyboardButton("💬 Message Claimant via Bot", callback_data=f"msg_relay_prompt_{loser_chat_id}")
+                ]
+            ]
+
+            await context.bot.send_message(
+                chat_id = finder_chat_id,
+                text = (
+                    f"🛎️ <b>Handshake Claim Notification!</b>\n\n"
+                    f"Student {loser_mention} is attempting to reclaim your found listing:\n"
+                    f"📦 <b>Item:</b> {item_desc}{privacy_notice}\n\n"
+                    f"Have you safely met up on campus and returned this item to them?"
+                ),
+                reply_markup = InlineKeyboardMarkup(handshake_keyboard),
+                parse_mode = "HTML"
+            )
+            
+            await update.message.reply_text(
+                "📬 <b>Claim Request Transmitted!</b>\n\n"
+                "We have pinged the finder to confirm the physical handoff. If they verify it, "
+                "your open lost tickets matching this space will resolve instantly.",
+                parse_mode = "HTML"
+            )
+            return
+            
+        except Exception as err:
+            logger.error(f"DParsing fault: {err}")
+            await update.message.reply_text("❌ Invalid verification.")
+            return
+
+    # Standard /start command
     first_name = update.effective_user.first_name
     welcome_message = (
         f"Hi {first_name}! 👋 Welcome to <b>FinditNUS</b> \n\n"
@@ -761,6 +850,7 @@ def main() -> None:
 
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text_inputs))
 
+    threading.Thread(target = run_health_check, daemon = True).start()
     # Check if Telegram bot starts successfully
     print("FindItNUS Bot is running successfully")
     app.run_polling()
