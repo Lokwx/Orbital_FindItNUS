@@ -363,6 +363,7 @@ function SavedPageContent() {
                     categoryFilter={selectedCategory}
                     listingsPanel={listingsPanel}
                     setFilteredItems={setFilteredItems}
+                    setSelectedItemId={setSelectedItemId}
                 />
             </section>
         </main>

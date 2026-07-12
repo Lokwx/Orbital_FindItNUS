@@ -142,6 +142,7 @@ type MapProps = {
     categoryFilter?: string;
     listingsPanel: boolean;
     setFilteredItems?: (items:Item[]) => void;
+    setSelectedItemId?: (id: string | undefined) => void;
 };
 
 const UpdateMapPosition = ({ position }: { position: [number, number] }) => {
@@ -166,7 +167,7 @@ const ClosePopupDuringListingsPanel = ({ listingsPanel }: { listingsPanel:boolea
     return null;
 }
 
-export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter, listingsPanel, setFilteredItems}: MapProps) {
+export default function Map({ location, id, latitude, longitude, dateFilter, categoryFilter, listingsPanel, setFilteredItems, setSelectedItemId}: MapProps) {
     // Initial setup of origin location
     const area = location in NUS_AREA_COORDINATES ? (location as NusArea) : 'NUS';
     const originX = NUS_AREA_COORDINATES[area].latitude;
@@ -264,6 +265,14 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                             zIndexOffset={id === itemData.id ? 1000 : 0}
                             eventHandlers={{
                                 click: () => {
+                                    if (itemData.id != null) {
+                                        setSelectedItemId?.(undefined);
+
+                                        window.setTimeout(() => {
+                                            setSelectedItemId?.(itemData.id);
+                                        }, 0);
+                                    }
+
                                     setMapPosition(selectedMarkerPosition);
                                 },
                             }}
