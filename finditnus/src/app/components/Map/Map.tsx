@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
@@ -34,7 +34,7 @@ const selectedIcon = L.divIcon({
     html: `
         <img
             src="https://upload.wikimedia.org/wikipedia/commons/d/d8/Map_Pin.svg"
-            style="width:22px;height:28px;"
+            style="width:36px;height:44px;"
         />
     `,
     iconSize: [36, 36],
@@ -208,6 +208,17 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
     },[filteredItems,setFilteredItems]);
 
     const [mapPosition, setMapPosition] = useState<[number, number]>(position)
+    const markerRefs = useRef<Record<string, L.Marker | null>>({});
+
+    useEffect(() => {
+        if (id == null) return;
+
+        const timeoutId = window.setTimeout(() => {
+            markerRefs.current[id]?.openPopup();
+        }, 0);
+
+        return () => window.clearTimeout(timeoutId);
+    }, [id, filteredItems]);
 
     return (
         <section className="relative flex h-full w-full">
@@ -231,8 +242,13 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                     return (
                         <Marker
                             key={itemData.id}
+                            ref={(marker) => {
+                                if (itemData.id != null) {
+                                    markerRefs.current[itemData.id] = marker;
+                                }
+                            }}
                             position={selectedMarkerPosition}
-                            icon={id == null ? pinIcon : id == itemData.id ? selectedIcon : nonSelectedIcon}
+                            icon={id === itemData.id ? selectedIcon : pinIcon}
                             eventHandlers={{
                                 click: () => {
                                     setMapPosition(selectedMarkerPosition);
@@ -314,7 +330,7 @@ export default function Map({ location, id, latitude, longitude, dateFilter, cat
                                         <div>
                                             <h1 className="text-xs text-slate-500">Reported At</h1>
                                             <h2 className="font-semibold font-sm">
-                                                {itemData.Day}/{itemData.Month}/{itemData.Year} {String(itemData.Hour).padStart(2,'0')}:{String(itemData.Minute).padStart(2,'0')}:{String(itemData.Second).padStart(2,'0')}
+                                                {itemData.Day}/{itemData.Month}/{itemData.Year} {String(itemData.Hour).padStart(2, '0')}:{String(itemData.Minute).padStart(2, '0')}:{String(itemData.Second).padStart(2, '0')}
                                             </h2>
                                         </div>
                                     </section>
