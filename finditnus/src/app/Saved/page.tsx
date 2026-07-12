@@ -51,8 +51,8 @@ function SavedPageContent() {
     const returnURL = useSearchParams().get('returnURL') ?? '/';
     const id = useSearchParams().get('id') ?? undefined;
 
-    const [selectedItemId, setSelectedItemId] = useState<string | undefined>();
-    const activeItemId = selectedItemId ?? id;
+    const [selectedItemId, setSelectedItemId] = useState<string | undefined>(id);
+    const activeItemId = selectedItemId;
 
     const lat = useSearchParams().get('latitude');
     const lng = useSearchParams().get('longitude');
