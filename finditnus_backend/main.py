@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 
 # Fetch Telegram Bot token and Web App URL from config.py
 TELEGRAM_TOKEN = config.TELEGRAM_TOKEN
+if os.environ.get("WEB_APP_BASE_URL"):
+    config.WEB_APP_BASE_URL = os.environ.get("WEB_APP_BASE_URL")
+
 WEB_APP_BASE_URL = config.WEB_APP_BASE_URL
 
 # Store campus locations 
