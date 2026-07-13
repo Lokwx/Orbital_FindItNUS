@@ -984,14 +984,18 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
             ticket_keyword = ticket_data.get("keywords", "").lower().strip()
             loser_chat = ticket_data.get("telegramChatId")
             ticket_macro = ticket_data.get("macroLocation", "Entire Campus")
-
+            
+            # Combine the Item Name and Description for easier keyword search 
+            item_name_text = user_data.get("item_name", "")
+            full_search_text = f"{item_name_text} {description_text}.lower()
+            
             # Check if the found item's location matches loser's search zone
             if ticket_macro in [macro_name, "Entire Campus"]:
                 if loser_chat and loser_chat not in notified_losers:
                     keyword_words = ticket_keyword.split()
 
                     # Check if the loser's keywords exist in the found item's description
-                    if keyword_words and all(word in description_text.lower() for word in keyword_words):
+                    if keyword_words and all(word in full_search_text.lower() for word in keyword_words):
                         if ticket_macro == "Entire Campus":
                             view_url = f"{config.WEB_APP_BASE_URL}?keyword={ticket_keyword}"
                         else:
