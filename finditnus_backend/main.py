@@ -335,7 +335,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     # Standard /start command
     first_name = update.effective_user.first_name
     welcome_message = (
-        f"Hi {first_name}! 👋 Welcome to <b>FinditNUS</b> \n\n"
+        f"Hi {first_name}! 👋 Welcome to <b>FindItNUS</b> \n\n"
         "Let's look for your campus belongings!\n\n" 
         "Are you reporting an item you found, or searching for something you lost?"
         )
