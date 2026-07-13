@@ -962,9 +962,9 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
         "Status": "spotted" if user_flow == "spotted" else "active",
     }
     # Establish connection to Firebase and look for 'listings'
-    success = database.add_item_listing(payload)
+    doc_id = database.add_item_listing(payload)
 
-    if not success:
+    if not doc_id:
         raise RuntimeError("Database is offline!")
 
     # Matchmaking Portion
@@ -996,11 +996,8 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
 
                     # Check if the loser's keywords exist in the found item's description
                     if keyword_words and all(word in full_search_text.lower() for word in keyword_words):
-                        if ticket_macro == "Entire Campus":
-                            view_url = f"{config.WEB_APP_BASE_URL}?keyword={ticket_keyword}"
-                        else:
-                            macro_url_name = macro_name.lower().replace(" ", "_")
-                            view_url = f"{config.WEB_APP_BASE_URL}?zone=zone_{macro_url_name}&keyword={ticket_keyword}"
+                        clean_base_url = config.WEB_APP_BASE_URL.rstrip('/')
+                        view_url = f"{clean_base_url}/Saved?location=NUS&id={doc_id}&latitude={lat}&longitude={long}"
 
                         matches_found.append({
                             "chat_id": loser_chat,
