@@ -48,10 +48,10 @@ def add_item_listing(payload: dict) -> bool:
             logger.error("Database not initialized. Cannot add item listing.")
             return False
         
-        # Else, add listing
-        db.collection("listings").add(payload)
+        # Else, add listing and capture the generated reference
+        _, doc_ref = db.collection("listings").add(payload)
         logger.info("Successfully added a new item listing to Firestore!")
-        return True
+        return doc_ref.id
     
     except Exception as e:
         logger.error(f"Error adding item listing to Firestore: {e}")
