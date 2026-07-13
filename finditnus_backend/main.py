@@ -987,7 +987,7 @@ def database_saver(user_data: dict, chat_id: int, username: str, description_tex
             
             # Combine the Item Name and Description for easier keyword search 
             item_name_text = user_data.get("item_name", "")
-            full_search_text = f"{item_name_text} {description_text}.lower()
+            full_search_text = f"{item_name_text} {description_text}".lower()
             
             # Check if the found item's location matches loser's search zone
             if ticket_macro in [macro_name, "Entire Campus"]:
