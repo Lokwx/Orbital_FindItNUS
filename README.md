@@ -97,7 +97,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **Complexity justification:** Establishing real-time reading loops connecting the frontend to Firestore database dynamically, ensuring instant pin rendering without browser refresh.
 * **Design decisions:** We built our interface with React and Next.js, utilizing Leaflet and OpenStreetMap integrations to handle the visual map tiles.
 
-### Feature 6: Search and Filter Functionality
+**Feature 6: Search and Filter Functionality**
 * **Status:** Implemented
 * **User role:** Public user
 * **What it does:** Allows users to search and filter lost-and-found items across the campus.
@@ -118,7 +118,7 @@ FindItNUS makes reclaiming lost possessions predictable, efficient, and reliable
 * **Complexity justification:** Relying solely on Firestore's native TTL would leave orphaned image Cloudinary database. We built a custom, non-blocking asynchronous thread that wakes up periodically, identifies expired elements, securely executes the Cloudinary deletion API via `public_id`, and then drops the Firestore document—ensuring complete data deletion.
 * **Design decisions:** Instead of building a custom cron job or relying Firestore's native TTL expiry rules, we had to implement a custom script to avoid the paid subscription for Firestore's TTL.
 
-### Feature 9: Continuous Cloud Infrastructure 
+**Feature 9: Continuous Cloud Infrastructure**
 * **Status:** Implemented
 * **User role:** Admin
 * **What it does:** Ensures 24/7 Telegram bot uptime without dropping user messages or requiring manual server restarts.
