@@ -146,7 +146,7 @@ Figure 1: High-level data flow diagram showing how the Telegram Bot, Database, a
 The system is heavily decoupled via Firestore. The Python bot acts as the primary "Write" client, packing user inputs into standard JSON payloads. The React application hosted on Vercel acts as the "Read" client. Cloudinary exists as a parallel storage node to isolate media bandwidth.
 
 **The Push Notification Flow (Matchmaking):**
-When a Finder uploads an item, the backend temporarily halts the success message, queries the `lost_tickets` collection, concatenates strings to hunt for keyword intersections within the same faculty zone, fires the Telegram API alerts to matching `chat_id`s, and then finalizes the upload.
+When a Finder uploads an item, the backend temporarily halts the success message, queries the `lost_tickets` collection, concatenates strings to hunt for keyword intersections within the same faculty zone, fires the Telegram API alerts to matching `chat_id`, and then finalizes the upload.
 
 **Key User Journey:**
 1. **The Finder (Data Creation):**
