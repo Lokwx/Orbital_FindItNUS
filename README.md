@@ -10,6 +10,7 @@
 * **Team Members:** Gavin & Wei Xiong
 * **Milestone:** 2
 * **Deployment:** [finditnus.vercel.app](https://finditnus.vercel.app)
+* **Telegram Bot:** [FindItNUS](https://t.me/nusfindit_bot)
 
 ---
 
