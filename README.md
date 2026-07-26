@@ -230,13 +230,6 @@ We conducted guided tasks with actual NUS students to identify UX friction point
 * **Mitigation:** We established a JSON schema database payload that should not be modified to prevent map rendering crashes.
 
 ---
-## Frontend Application
-* **`LandingPage.tsx`**:
-
-## Backend Application
-* **`config.py`**: Handles environmental variables and holds connection settings safely.
-* **`database.py`**: Handles all reads, writes, updates and deletes for Firebase.
-* **`storage.py`**: Handles sending and deleting images on Cloudinary.
 
 ## Database 
 We use 2 main document collections in Firestore:
